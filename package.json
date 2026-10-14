@@ -1,0 +1,19 @@
+{
+  "name": "bluesparks",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Bluesparks Holdings — Johnson Rentals (cars) + Bluesparks Stays (BnB) website, booking system and admin dashboard.",
+  "workspaces": ["client", "server", "shared"],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,yellow \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w shared && npm run build -w server && npm run build -w client",
+    "typecheck": "npm run typecheck -w shared && npm run typecheck -w server && npm run typecheck -w client",
+    "test": "npm test -w server",
+    "db:setup": "npm run db:setup -w server",
+    "start": "npm start -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": { "node": ">=20" }
+}
