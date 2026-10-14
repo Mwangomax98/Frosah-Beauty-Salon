@@ -84,7 +84,8 @@ adminBookingsRouter.patch("/bookings/:id", async (req, res) => {
 adminBookingsRouter.get("/reports/revenue", async (req, res) => {
   const today = todayIso();
   const q = parseQuery(z.object({ from: isoDate.optional(), to: isoDate.optional() }), req);
-  const from = q.from ?? `${today.slice(0, 4) - 0 - 1}${today.slice(4, 7)}-01`;
+  // Default window: the start of the same month one year ago, through one year ahead.
+  const from = q.from ?? `${Number(today.slice(0, 4)) - 1}${today.slice(4, 7)}-01`;
   const to = q.to ?? addDays(today, 365);
   const rows = await query<{
     service: "car" | "stay";
