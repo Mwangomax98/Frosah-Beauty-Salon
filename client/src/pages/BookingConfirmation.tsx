@@ -18,6 +18,7 @@ export default function BookingConfirmation() {
   const [sp] = useSearchParams();
   const email = sp.get("email") ?? "";
   const addCar = sp.get("addCar") === "1";
+  const payment = sp.get("payment"); // success | failed | cancelled | pending (return from gateway)
   const { data: settings } = useSettings();
   useSeo({ title: `Booking ${reference}`, noindex: true });
 
@@ -48,6 +49,14 @@ export default function BookingConfirmation() {
 
   return (
     <article className="container-x py-10 lg:py-14">
+      {payment && (
+        <div role="status" className={`mb-6 border-l-4 p-4 text-sm font-bold ${payment === "success" ? "border-ok bg-[#dcefe3] text-ok" : payment === "pending" ? "border-warn bg-[#fff1d6] text-warn" : "border-danger bg-[#f8dcda] text-danger"}`}>
+          {payment === "success" && "Payment received. Asante — you're all set."}
+          {payment === "pending" && "Your payment is still being confirmed by the provider. This page updates once it clears; the booking is held meanwhile."}
+          {payment === "failed" && "The payment didn't go through. Nothing was charged. You can try again from the WhatsApp link below, or pay on collection."}
+          {payment === "cancelled" && "You cancelled the payment. The booking is held as a reservation; message us to pay another way."}
+        </div>
+      )}
       <p className="eyebrow">{b.status === "cancelled" ? "Cancelled" : "Asante — booking received"}</p>
       <h1 className="mt-2 text-6xl break-all sm:text-8xl">{b.reference}</h1>
       <p className="mt-3 max-w-xl text-lg">

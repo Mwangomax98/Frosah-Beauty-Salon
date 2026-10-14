@@ -43,7 +43,7 @@ export function PropertyCard({ p, bookHref, onChoose, chosen, compact }: Props) 
               {p.name}
             </Link>
           </h3>
-          <p className="text-right leading-none">
+          <p className="shrink-0 text-right leading-none whitespace-nowrap">
             <span className="font-display text-2xl text-orange">{fmt(p.pricePerNightTzs)}</span>
             <span className="block text-xs text-ink-soft">{t.common.perNight}</span>
           </p>

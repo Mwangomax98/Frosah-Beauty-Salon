@@ -13,10 +13,12 @@ import { VehicleCard } from "@/components/VehicleCard";
 import { Skeleton, ErrorState, EmptyState } from "@/components/States";
 import { useToast } from "@/components/ui/Toast";
 import { fmtDate, tomorrow } from "@/lib/format";
-import { BookingShell, StepNav, SummaryBox, CustomerFields, DocumentUpload, QuoteTable, PaymentChoice, PromoField, TermsLine, useStep, type UploadedDoc, type CustomerForm } from "./shared";
-import { carDatesSchema, carDetailsSchema, flatten, type FieldErrors } from "./schemas";
+import { BookingShell, StepNav, SummaryBox, CustomerFields, DocumentUpload, QuoteTable, PaymentChoice, PromoField, TermsLine, FormAlert, useStep, type UploadedDoc, type CustomerForm } from "./shared";
+import { carDatesSchema, carDetailsSchema, flatten, fromServer, type FieldErrors } from "./schemas";
 
 const STEPS = ["Dates & places", "Rental type", "Vehicle", "Extras", "Your details", "Review & pay"];
+const STEP_OF_FIELD = (stepOf: (keys: string[], n: number) => number | null) =>
+  stepOf(["pickupDate", "returnDate", "pickupTime", "returnTime", "pickupLocation", "dropoffLocation", "pickupAddress", "dropoffAddress", "deliveryZoneId", "dates"], 1) ?? stepOf(["rentalType", "driverScope"], 2) ?? stepOf(["vehicleId"], 3) ?? stepOf(["extras"], 4) ?? stepOf(["fullName", "email", "phone", "country", "passengers", "flightNumber", "licence", "id", "documents", "acceptedTerms"], 5);
 
 interface State {
   pickupDate: string;
@@ -116,10 +118,30 @@ export default function BookCar() {
   });
 
   const [promoApplied, setPromoApplied] = useState("");
+  const [promoError, setPromoError] = useState<string | undefined>();
   const serverQuote = useQuery({
-    queryKey: ["quote-car", quoteBody(), promoApplied],
-    queryFn: () => api.post<Quote>("/quote/car", { ...quoteBody(), promoCode: promoApplied || undefined }),
+    queryKey: ["quote-car", quoteBody(), promoApplied, f.customer.email],
+    queryFn: async () => {
+      try {
+        return await api.post<Quote>("/quote/car", { ...quoteBody(), promoCode: promoApplied || undefined, customer: f.customer.email ? { email: f.customer.email } : undefined });
+      } catch (e) {
+        // Unknown promo or bundle ref: show inline and re-quote without it rather than blocking the form.
+        if (e instanceof ApiError && e.status === 400 && (e.fields.promoCode || e.fields.bundleWithBookingRef)) {
+          if (e.fields.promoCode) {
+            setPromoError(e.fields.promoCode);
+            setPromoApplied("");
+          }
+          if (e.fields.bundleWithBookingRef) {
+            setErrors((x) => ({ ...x, bundleWithBookingRef: e.fields.bundleWithBookingRef! }));
+            patch({ bundleWithBookingRef: "" });
+          }
+          return api.post<Quote>("/quote/car", { ...quoteBody(), promoCode: undefined, bundleWithBookingRef: e.fields.bundleWithBookingRef ? undefined : quoteBody().bundleWithBookingRef });
+        }
+        throw e;
+      }
+    },
     enabled: step === 6 && !!vehicle,
+    retry: false,
   });
 
   const submit = useMutation({
@@ -132,7 +154,17 @@ export default function BookCar() {
       nav(`/booking/${res.booking.reference}?email=${encodeURIComponent(res.booking.customer.email)}`);
     },
     onError: (e) => {
-      if (e instanceof ApiError && Object.keys(e.fields).length) setErrors(e.fields);
+      if (e instanceof ApiError) {
+        const f = fromServer(e.fields);
+        if (e.status === 409) f._ = f.dates ?? "Those dates were just taken. Please pick different dates.";
+        if (!Object.keys(f).length) f._ = e.message;
+        setErrors(f);
+        // send the user back to the step that owns the failing field
+        const k = Object.keys(f);
+        const stepOf = (keys: string[], n: number) => (k.some((x) => keys.includes(x)) ? n : null);
+        const target = STEP_OF_FIELD(stepOf);
+        if (target) setStep(target);
+      }
       toast(errorMessage(e), "error");
     },
   });
@@ -164,7 +196,7 @@ export default function BookCar() {
         vehicleId: vehicle.id,
         passengers: Number(f.passengers),
         flightNumber: f.flightNumber || undefined,
-        promoCode: promoApplied || undefined,
+        promoCode: promoApplied && !promoError ? promoApplied : undefined,
         customer: { ...f.customer, specialRequests: f.customer.specialRequests || undefined },
         paymentMethod: f.paymentMethod,
         currency,
@@ -201,6 +233,7 @@ export default function BookCar() {
   return (
     <BookingShell eyebrow={COMPANY.carsBrand} title="Book a car" steps={STEPS} step={step} onGoTo={setStep} aside={aside}>
       <form onSubmit={next} noValidate>
+        <FormAlert errors={errors} />
         {step === 1 && (
           <div className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -371,7 +404,7 @@ export default function BookCar() {
             {serverQuote.isPending && <Skeleton className="h-48" />}
             {serverQuote.isError && <ErrorState error={serverQuote.error} retry={() => serverQuote.refetch()} compact />}
             {serverQuote.data && <QuoteTable quote={serverQuote.data} />}
-            <PromoField value={f.promoCode} onChange={(v) => patch({ promoCode: v })} onApply={() => setPromoApplied(f.promoCode)} applied={!!promoApplied && promoApplied === f.promoCode} />
+            <PromoField value={f.promoCode} onChange={(v) => { patch({ promoCode: v }); setPromoError(undefined); }} onApply={() => { setPromoError(undefined); setPromoApplied(f.promoCode); }} applied={!!promoApplied && promoApplied === f.promoCode} error={promoError} />
             <PaymentChoice value={f.paymentMethod} onChange={(v) => patch({ paymentMethod: v })} payNowLabel="Pay online now" payLaterLabel="Reserve, pay on collection" payLaterHint="Cash or mobile money when you collect the keys" />
             <dl className="grid gap-2 border-2 border-line bg-cream p-4 text-sm sm:grid-cols-2">
               <div>

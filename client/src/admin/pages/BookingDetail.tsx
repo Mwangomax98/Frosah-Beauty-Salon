@@ -66,7 +66,17 @@ export default function BookingDetail() {
             className="space-y-4 border-2 border-line bg-white p-4"
             onSubmit={(e) => {
               e.preventDefault();
-              save.mutate({ ...edit, startTime: edit.startTime || null, endTime: edit.endTime || null });
+              // strict PATCH: send only the keys that changed
+              const body: Patch = {};
+              if (edit.startDate !== b.startDate) body.startDate = edit.startDate;
+              if (edit.endDate !== b.endDate) body.endDate = edit.endDate;
+              if ((edit.startTime || null) !== b.startTime) body.startTime = edit.startTime || null;
+              if ((edit.endTime || null) !== b.endTime) body.endTime = edit.endTime || null;
+              if ((edit.adminNotes ?? "") !== b.adminNotes) body.adminNotes = edit.adminNotes ?? "";
+              if (edit.paymentStatus && edit.paymentStatus !== b.paymentStatus) body.paymentStatus = edit.paymentStatus;
+              if (edit.customer && JSON.stringify(edit.customer) !== JSON.stringify(b.customer)) body.customer = edit.customer;
+              if (Object.keys(body).length === 0) return toast("Nothing changed", "info");
+              save.mutate(body);
             }}
           >
             <h2 className="text-xl">Dates & customer</h2>
@@ -136,6 +146,36 @@ export default function BookingDetail() {
                   <a href={docUrl(d.path)} target="_blank" rel="noopener" className="link-underline">
                     {d.kind}: {d.originalName}
                   </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="border-2 border-line bg-white p-4">
+            <h2 className="text-xl">Payments</h2>
+            {!b.payments?.length && <p className="mt-2 text-sm text-ink-soft">No payment attempts.</p>}
+            <ul className="mt-2 divide-y divide-line text-sm">
+              {b.payments?.map((p) => (
+                <li key={p.id} className="flex justify-between gap-2 py-1.5">
+                  <span>
+                    {p.gateway} · <b className={p.status === "successful" ? "text-ok" : p.status === "failed" ? "text-danger" : ""}>{p.status}</b>
+                    <span className="block text-xs text-ink-soft">{fmtTimestamp(p.createdAt)}{p.gatewayRef ? ` · ${p.gatewayRef}` : ""}</span>
+                  </span>
+                  <span className="tabular">{fmt(p.amountTzs)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="border-2 border-line bg-white p-4">
+            <h2 className="text-xl">Notifications</h2>
+            {!b.notifications?.length && <p className="mt-2 text-sm text-ink-soft">None logged.</p>}
+            <ul className="mt-2 divide-y divide-line text-sm">
+              {b.notifications?.map((n) => (
+                <li key={n.id} className="flex justify-between gap-2 py-1.5">
+                  <span>
+                    {n.channel} · <b className={n.status === "sent" ? "text-ok" : n.status === "failed" ? "text-danger" : ""}>{n.status}</b>
+                    {n.error && <span className="block text-xs text-danger">{n.error}</span>}
+                  </span>
+                  <span className="text-xs text-ink-soft">{fmtTimestamp(n.createdAt)}</span>
                 </li>
               ))}
             </ul>

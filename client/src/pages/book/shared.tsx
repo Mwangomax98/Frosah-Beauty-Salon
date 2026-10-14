@@ -242,14 +242,25 @@ export function PaymentChoice({ value, onChange, payNowLabel, payLaterLabel, pay
   );
 }
 
-export function PromoField({ value, onChange, onApply, applied }: { value: string; onChange: (v: string) => void; onApply: () => void; applied?: boolean }) {
+export function PromoField({ value, onChange, onApply, applied, error }: { value: string; onChange: (v: string) => void; onApply: () => void; applied?: boolean; error?: string }) {
   return (
-    <div className="flex items-end gap-2">
-      <Input label="Promo code" value={value} onChange={(e) => onChange(e.target.value.toUpperCase())} className="flex-1" autoCapitalize="characters" />
-      <Button variant="ghost" onClick={onApply} disabled={!value}>
-        {applied ? "Applied" : "Apply"}
+    <div className="flex items-start gap-2">
+      <Input label="Promo code" value={value} onChange={(e) => onChange(e.target.value.toUpperCase())} className="flex-1" autoCapitalize="characters" error={error} hint={applied && !error ? "Code applied to the quote." : undefined} />
+      <Button variant="ghost" onClick={onApply} disabled={!value} className="mt-6">
+        {applied && !error ? "Applied" : "Apply"}
       </Button>
     </div>
+  );
+}
+
+/** Top-of-form message for errors that don't map to a single field (conflict, bundle ref, rate limit). */
+export function FormAlert({ errors }: { errors: Record<string, string> }) {
+  const general = errors._ ?? errors.dates ?? errors.bundleWithBookingRef ?? errors.documents;
+  if (!general) return null;
+  return (
+    <p role="alert" className="border-l-4 border-danger bg-white p-3 text-sm font-bold text-danger">
+      {general}
+    </p>
   );
 }
 

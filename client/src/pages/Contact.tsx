@@ -25,9 +25,10 @@ export default function Contact() {
   const { t } = useT();
   const { data: s } = useSettings();
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
+  const [website, setWebsite] = useState(""); // honeypot: must stay empty
   const [errors, setErrors] = useState<FieldErrors>({});
   const [sent, setSent] = useState(false);
-  const m = useMutation({ mutationFn: (body: typeof f) => api.post<{ ok: true }>("/contact", body), onSuccess: () => setSent(true) });
+  const m = useMutation({ mutationFn: (body: typeof f) => api.post<{ ok: true }>("/contact", { ...body, website }), onSuccess: () => setSent(true) });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -82,8 +83,14 @@ export default function Contact() {
               <p className="mt-3 text-ink-soft">We'll reply to {f.email} or on {f.phone}, usually within the hour during the day.</p>
             </div>
           ) : (
-            <form onSubmit={submit} noValidate className="space-y-4 border-2 border-brand bg-white p-6 shadow-hard sm:p-8" aria-label="Contact form">
+            <form onSubmit={submit} noValidate className="relative space-y-4 border-2 border-brand bg-white p-6 shadow-hard sm:p-8" aria-label="Contact form">
               <h2 className="text-3xl">Or write to us</h2>
+              <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                <label>
+                  Website
+                  <input type="text" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                </label>
+              </div>
               <Input label={t.form.fullName} required autoComplete="name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} error={errors.name} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <Input label={t.form.email} type="email" required autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} error={errors.email} />

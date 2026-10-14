@@ -14,10 +14,11 @@ import { Skeleton, ErrorState, EmptyState } from "@/components/States";
 import { useToast } from "@/components/ui/Toast";
 import { fmtDate, tomorrow, img800 } from "@/lib/format";
 import { IMAGES } from "@/content/images";
-import { BookingShell, StepNav, SummaryBox, CustomerFields, DocumentUpload, QuoteTable, PaymentChoice, PromoField, TermsLine, useStep, type UploadedDoc, type CustomerForm } from "./shared";
-import { stayDatesSchema, stayDetailsSchema, flatten, type FieldErrors } from "./schemas";
+import { BookingShell, StepNav, SummaryBox, CustomerFields, DocumentUpload, QuoteTable, PaymentChoice, PromoField, TermsLine, FormAlert, useStep, type UploadedDoc, type CustomerForm } from "./shared";
+import { stayDatesSchema, stayDetailsSchema, flatten, fromServer, type FieldErrors } from "./schemas";
 
 const STEPS = ["Dates & guests", "Property", "Extras", "Your details", "Review & pay"];
+const STEP_OF_FIELD = (stepOf: (keys: string[], n: number) => number | null) => stepOf(["checkIn", "checkOut", "guests", "dates"], 1) ?? stepOf(["propertyId"], 2) ?? stepOf(["extras"], 3) ?? stepOf(["fullName", "email", "phone", "country", "arrivalTime", "documents", "acceptedTerms", "acceptedHouseRules"], 4);
 
 interface State {
   checkIn: string;
@@ -88,10 +89,29 @@ export default function BookStay() {
     bundleWithBookingRef: f.bundleWithBookingRef || undefined,
   });
   const [promoApplied, setPromoApplied] = useState("");
+  const [promoError, setPromoError] = useState<string | undefined>();
   const serverQuote = useQuery({
-    queryKey: ["quote-stay", quoteBody(), promoApplied],
-    queryFn: () => api.post<Quote>("/quote/stay", { ...quoteBody(), promoCode: promoApplied || undefined }),
+    queryKey: ["quote-stay", quoteBody(), promoApplied, f.customer.email],
+    queryFn: async () => {
+      try {
+        return await api.post<Quote>("/quote/stay", { ...quoteBody(), promoCode: promoApplied || undefined, customer: f.customer.email ? { email: f.customer.email } : undefined });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 400 && (e.fields.promoCode || e.fields.bundleWithBookingRef)) {
+          if (e.fields.promoCode) {
+            setPromoError(e.fields.promoCode);
+            setPromoApplied("");
+          }
+          if (e.fields.bundleWithBookingRef) {
+            setErrors((x) => ({ ...x, bundleWithBookingRef: e.fields.bundleWithBookingRef! }));
+            patch({ bundleWithBookingRef: "" });
+          }
+          return api.post<Quote>("/quote/stay", { ...quoteBody(), promoCode: undefined, bundleWithBookingRef: e.fields.bundleWithBookingRef ? undefined : quoteBody().bundleWithBookingRef });
+        }
+        throw e;
+      }
+    },
     enabled: step === 5 && !!property,
+    retry: false,
   });
 
   const submit = useMutation({
@@ -106,7 +126,17 @@ export default function BookStay() {
       nav(`/booking/${res.booking.reference}?${q}`);
     },
     onError: (e) => {
-      if (e instanceof ApiError && Object.keys(e.fields).length) setErrors(e.fields);
+      if (e instanceof ApiError) {
+        const f = fromServer(e.fields);
+        if (e.status === 409) f._ = f.dates ?? "Those dates were just taken. Please pick different dates.";
+        if (!Object.keys(f).length) f._ = e.message;
+        setErrors(f);
+        // send the user back to the step that owns the failing field
+        const k = Object.keys(f);
+        const stepOf = (keys: string[], n: number) => (k.some((x) => keys.includes(x)) ? n : null);
+        const target = STEP_OF_FIELD(stepOf);
+        if (target) setStep(target);
+      }
       toast(errorMessage(e), "error");
     },
   });
@@ -136,7 +166,7 @@ export default function BookStay() {
         guests: Number(f.guests),
         arrivalTime: f.arrivalTime || undefined,
         extras: quoteBody().extras,
-        promoCode: promoApplied || undefined,
+        promoCode: promoApplied && !promoError ? promoApplied : undefined,
         bundleWithBookingRef: f.bundleWithBookingRef || undefined,
         customer: { ...f.customer, specialRequests: f.customer.specialRequests || undefined },
         paymentMethod: property.paymentMode === "on_arrival" ? "on_arrival" : f.paymentMethod,
@@ -178,6 +208,7 @@ export default function BookStay() {
   return (
     <BookingShell eyebrow={s.bnbBrandName || COMPANY.staysBrand} title="Book a stay" steps={STEPS} step={step} onGoTo={setStep} aside={aside}>
       <form onSubmit={next} noValidate>
+        <FormAlert errors={errors} />
         {step === 1 && (
           <div className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-3">
@@ -291,7 +322,7 @@ export default function BookStay() {
             {serverQuote.isPending && <Skeleton className="h-48" />}
             {serverQuote.isError && <ErrorState error={serverQuote.error} retry={() => serverQuote.refetch()} compact />}
             {serverQuote.data && <QuoteTable quote={serverQuote.data} depositLabel={payMode === "deposit" ? `Deposit now (${property.depositPercent}%)` : undefined} />}
-            <PromoField value={f.promoCode} onChange={(v) => patch({ promoCode: v })} onApply={() => setPromoApplied(f.promoCode)} applied={!!promoApplied && promoApplied === f.promoCode} />
+            <PromoField value={f.promoCode} onChange={(v) => { patch({ promoCode: v }); setPromoError(undefined); }} onApply={() => { setPromoError(undefined); setPromoApplied(f.promoCode); }} applied={!!promoApplied && promoApplied === f.promoCode} error={promoError} />
             {payMode === "on_arrival" ? (
               <p className="border-l-4 border-orange bg-cream p-4 text-sm">This place is paid on arrival: nothing to pay now. Cash, M-Pesa, Tigo Pesa, Airtel Money or Halopesa at check-in.</p>
             ) : (

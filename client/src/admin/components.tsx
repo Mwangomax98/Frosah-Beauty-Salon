@@ -75,7 +75,7 @@ export function ImageList({ images, onChange }: { images: string[]; onChange: (v
     if (!file) return;
     setErr(null);
     const form = new FormData();
-    form.append("file", file);
+    form.append("image", file);
     setPct(0);
     try {
       const res = await uploadWithProgress<{ url: string }>("/admin/uploads/image", form, setPct);

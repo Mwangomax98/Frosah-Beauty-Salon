@@ -59,6 +59,13 @@ export const stayDetailsSchema = customerSchema.extend({
 
 export type FieldErrors = Record<string, string>;
 
+/** Server `fields` use dotted paths (customer.email). Strip the `customer.` prefix so they match our inputs. */
+export function fromServer(fields: Record<string, string>): FieldErrors {
+  const out: FieldErrors = {};
+  for (const [k, v] of Object.entries(fields)) out[k.replace(/^customer\./, "")] = v;
+  return out;
+}
+
 /** Collapse a zod error to { path: message } for inline display. */
 export function flatten(err: z.ZodError): FieldErrors {
   const out: FieldErrors = {};

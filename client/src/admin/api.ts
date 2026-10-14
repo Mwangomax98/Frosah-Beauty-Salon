@@ -1,9 +1,9 @@
 // Admin data hooks. All under /api/admin, token attached by lib/api.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { BlockedDate, Booking, DeliveryZone, Extra, PromoCode, Property, SeasonalRate, Settings, Vehicle, Service } from "@bluesparks/shared";
+import type { BlockedDate, Booking, DeliveryZone, Extra, Payment, PromoCode, Property, SeasonalRate, Settings, Vehicle, Service } from "@bluesparks/shared";
 import { api, getAdminToken, qs } from "@/lib/api";
 
-export type AdminProperty = Property & { icalExportUrl?: string };
+export type AdminProperty = Property & { icalExportUrl?: string; icalToken?: string };
 export interface BookingFilters {
   service?: string;
   status?: string;
@@ -15,31 +15,41 @@ export interface BookingFilters {
   pageSize?: number;
 }
 export interface RevenueReport {
+  from: string;
+  to: string;
   car: { count: number; totalTzs: number; paidTzs: number };
   stay: { count: number; totalTzs: number; paidTzs: number };
-  byMonth: { month: string; car?: number; stay?: number; carTzs?: number; stayTzs?: number; totalTzs?: number }[];
+  byMonth: { month: string; car: { count: number; totalTzs: number }; stay: { count: number; totalTzs: number } }[];
 }
 export interface CalendarItem {
   id: number;
+  service: Service;
   name: string;
-  bookings: Pick<Booking, "id" | "reference" | "status" | "startDate" | "endDate" | "customer">[];
+  slug: string;
+  bookings: Booking[];
   blocks: BlockedDate[];
 }
 export interface CalendarData {
+  from: string;
+  to: string;
   items: CalendarItem[];
+}
+export interface AdminBookingDetail extends Booking {
+  payments?: Payment[];
+  notifications?: { id: number; channel: string; status: string; createdAt: string; error?: string | null }[];
 }
 
 export function useAdminBookings(f: BookingFilters) {
-  return useQuery({ queryKey: ["admin-bookings", f], queryFn: ({ signal }) => api.get<{ items: Booking[]; total: number }>("/admin/bookings", f, signal) });
+  return useQuery({ queryKey: ["admin-bookings", f], queryFn: ({ signal }) => api.get<{ items: Booking[]; total: number; page: number; pageSize: number }>("/admin/bookings", { ...f }, signal) });
 }
 export function useAdminBooking(id: string | undefined) {
-  return useQuery({ queryKey: ["admin-booking", id], queryFn: () => api.get<Booking>(`/admin/bookings/${id}`), enabled: !!id });
+  return useQuery({ queryKey: ["admin-booking", id], queryFn: () => api.get<AdminBookingDetail>(`/admin/bookings/${id}`), enabled: !!id });
 }
 export function useRevenue(params?: { from?: string; to?: string }) {
   return useQuery({ queryKey: ["admin-revenue", params], queryFn: () => api.get<RevenueReport>("/admin/reports/revenue", params) });
 }
 export function useAdminCalendar(service: Service, from: string, to: string) {
-  return useQuery({ queryKey: ["admin-calendar", service, from, to], queryFn: () => api.get<CalendarData | CalendarItem[]>("/admin/calendar", { service, from, to }) });
+  return useQuery({ queryKey: ["admin-calendar", service, from, to], queryFn: () => api.get<CalendarData>("/admin/calendar", { service, from, to }) });
 }
 export function useAdminList<T>(key: string, path: string) {
   return useQuery({ queryKey: ["admin", key], queryFn: () => api.get<T[]>(path) });

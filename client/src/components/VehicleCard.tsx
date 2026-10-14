@@ -33,7 +33,7 @@ export function VehicleCard({ v, bookHref, compact, onChoose, chosen }: Props) {
               {v.name}
             </Link>
           </h3>
-          <p className="text-right leading-none">
+          <p className="shrink-0 text-right leading-none whitespace-nowrap">
             <span className="font-display text-2xl text-orange">{fmt(v.pricePerDayTzs)}</span>
             <span className="block text-xs text-ink-soft">{t.common.perDay}</span>
           </p>
