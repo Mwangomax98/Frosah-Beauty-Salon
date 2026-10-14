@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /book/
+Disallow: /booking/
+Sitemap: https://bluesparks.co.tz/sitemap.xml

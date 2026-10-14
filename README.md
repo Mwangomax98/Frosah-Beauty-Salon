@@ -60,3 +60,13 @@ Useful commands: `npm run typecheck` (all workspaces), `npm test` (server tests 
 ## Deploying (summary)
 
 Build with `npm run build`, serve `client/dist` as static files and run `npm start` for the API behind nginx with HTTPS (Let's Encrypt). Full numbered steps are in `server/README.md`.
+
+## Deploying the frontend on Vercel (quick preview)
+
+Vercel hosts only the React site (`client/`). The API needs a Node host with MySQL (Railway, Render, a VPS — see `server/README.md`).
+
+1. On vercel.com click **Add New → Project**, import `Mwangomax98/Frosah-Beauty-Salon`, and pick branch `claude/hopeful-bardeen-n0ugti`.
+2. Leave **Root Directory** as the repository root — `vercel.json` already sets the build command and output folder.
+3. Under **Environment Variables** add `VITE_API_URL` = the public URL of your API server (e.g. `https://api.bluesparks.co.tz`). Without it the site renders but listings, quotes and bookings show a connection error.
+4. Click **Deploy**.
+5. On the API host set `CLIENT_ORIGIN` and `PUBLIC_URL` to your Vercel URL (e.g. `https://bluesparks.vercel.app`) so CORS, emails and payment redirects point at the right place.

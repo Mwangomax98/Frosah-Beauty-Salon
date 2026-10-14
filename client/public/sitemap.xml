@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://bluesparks.co.tz/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://bluesparks.co.tz/cars</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bluesparks.co.tz/stays</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bluesparks.co.tz/about</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bluesparks.co.tz/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bluesparks.co.tz/terms</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://bluesparks.co.tz/privacy</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+</urlset>

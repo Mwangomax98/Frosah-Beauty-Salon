@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Bluesparks Holdings design tokens.
+   Every colour used anywhere in the site lives here.
+------------------------------------------------------------------ */
+@theme {
+  /* Paper base */
+  --color-paper: #faf6ef;
+  --color-cream: #f1eadd;
+  --color-line: #ddd3c2; /* hairlines on paper */
+
+  /* Action colour — buttons, prices, route line, highlights only */
+  --color-orange: #f26b1d;
+  --color-orange-deep: #c94f0b;
+
+  /* Text */
+  --color-ink: #1e1a16;
+  --color-ink-soft: #5c544b; /* 6.9:1 on paper */
+
+  /* PLACEHOLDER — replace with the exact colour sampled from the Bluesparks logo file */
+  --color-brand: #0b2545;
+  /* PLACEHOLDER — hover/pressed version of the logo colour (about 15% darker) */
+  --color-brand-deep: #071a31;
+  --color-brand-tint: #d9e1ee; /* brand at ~15% on paper, for soft fills */
+
+  /* Status (admin + forms only) */
+  --color-ok: #1f7a4d;
+  --color-warn: #a86a00;
+  --color-danger: #b3261e;
+
+  --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --shadow-hard: 4px 4px 0 0 var(--color-brand);
+  --shadow-hard-orange: 4px 4px 0 0 var(--color-orange-deep);
+
+  --breakpoint-xs: 25rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  ::selection {
+    background: var(--color-orange);
+    color: #fff;
+  }
+  h1,
+  h2,
+  h3,
+  .display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    font-weight: 400;
+    color: var(--color-brand);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-orange);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+  input[type="date"],
+  input[type="time"] {
+    min-height: 2.75rem;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+  }
+  details > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    body {
+      background: #fff;
+    }
+  }
+}
+
+/* Component-level utilities (declared with @utility so they can be @apply'd and used as classes). */
+@utility container-x {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+@utility eyebrow {
+  @apply text-xs font-bold tracking-[0.18em] uppercase text-orange;
+}
+@utility link-underline {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-orange);
+  &:hover {
+    color: var(--color-orange-deep);
+  }
+}
+@utility field {
+  @apply block w-full rounded-sm border-2 border-line bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-soft/70 focus:border-brand focus:outline-none focus-visible:outline-2 focus-visible:outline-orange focus-visible:outline-offset-2 disabled:bg-cream disabled:text-ink-soft;
+  &[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+}
+@utility label {
+  @apply mb-1 block text-sm font-bold text-brand;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-bold leading-none transition-[transform,background-color,box-shadow] duration-100 select-none;
+  &:active {
+    transform: translate(2px, 2px);
+  }
+  &[disabled],
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+  }
+}
+@utility btn-primary {
+  @apply btn bg-orange text-white shadow-hard-orange hover:bg-orange-deep;
+  &:active {
+    box-shadow: 0 0 0 0 var(--color-orange-deep);
+  }
+}
+@utility btn-brand {
+  @apply btn bg-brand text-paper shadow-hard-orange hover:bg-brand-deep;
+  &:active {
+    box-shadow: 0 0 0 0 var(--color-orange-deep);
+  }
+}
+@utility btn-ghost {
+  @apply btn border-2 border-brand bg-transparent text-brand hover:bg-brand hover:text-paper;
+}
+@utility btn-paper {
+  @apply btn bg-paper text-brand hover:bg-cream;
+  box-shadow: 4px 4px 0 0 var(--color-orange);
+  &:active {
+    box-shadow: 0 0 0 0 var(--color-orange);
+  }
+}
+@utility btn-danger {
+  @apply btn bg-danger text-white;
+  &:hover {
+    background-color: #8e1d17;
+  }
+}
+@utility btn-sm {
+  @apply px-3 py-2 text-sm;
+}
+@utility chip {
+  @apply inline-block rounded-sm border border-line bg-cream px-2 py-0.5 text-xs font-medium text-ink-soft;
+}
+@utility ticket-edge {
+  /* perforated edge — a shape, not a colour gradient */
+  --notch: 10px;
+  background-image: radial-gradient(circle at 0 50%, transparent var(--notch), var(--ticket-bg, #fff) calc(var(--notch) + 0.5px));
+  background-size: 100% 24px;
+}
+@utility prose-site {
+  @apply text-ink leading-relaxed;
+  & h2 {
+    @apply mt-10 mb-3 text-3xl;
+  }
+  & h3 {
+    @apply mt-6 mb-2 text-xl;
+  }
+  & p,
+  & li {
+    @apply mb-3 text-[17px];
+  }
+  & ul {
+    @apply mb-3 list-disc pl-6;
+  }
+  & a {
+    @apply link-underline;
+  }
+}
+@utility table-wrap {
+  @apply w-full overflow-x-auto;
+}
+@utility table-admin {
+  @apply w-full min-w-[720px] border-collapse text-sm;
+  & th {
+    @apply border-b-2 border-line bg-cream px-3 py-2 text-left text-xs font-bold tracking-wide text-brand uppercase whitespace-nowrap;
+  }
+  & td {
+    @apply border-b border-line px-3 py-2 align-top;
+  }
+  & tbody tr:hover {
+    background-color: color-mix(in srgb, var(--color-cream) 60%, transparent);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-glow {
+    /* the one permitted gradient: a subtle radial glow behind the hero photo */
+    background: radial-gradient(ellipse 55% 45% at 72% 60%, rgba(242, 107, 29, 0.22), transparent 70%);
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pin-open {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
