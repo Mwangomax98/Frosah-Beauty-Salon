@@ -13,9 +13,9 @@ const OUT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../publi
 await mkdir(OUT, { recursive: true });
 
 // PLACEHOLDER brand colours — keep in sync with src/index.css @theme.
-const BRAND = "#0B2545";
-const BRAND_DEEP = "#071A31";
-const ORANGE = "#F26B1D";
+const BRAND = "#081132"; // navy from the logo
+const BRAND_DEEP = "#030F36";
+const ORANGE = "#015CD9"; // royal blue from the logo (variable name kept for the art templates)
 const PAPER = "#FAF6EF";
 const CREAM = "#F1EADD";
 

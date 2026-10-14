@@ -44,8 +44,8 @@ export function BookingCard({ className = "", initialTab = "car" }: { className?
       {/* Brand stub with perforated edge */}
       <div className="relative hidden w-14 shrink-0 bg-brand xs:block" aria-hidden="true">
         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 font-display text-lg whitespace-nowrap text-paper/90 uppercase">{t.card.stub}</span>
-        <span className="absolute top-3 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-orange" />
-        <span className="absolute bottom-3 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-orange" />
+        <span className="absolute top-3 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-spark" />
+        <span className="absolute bottom-3 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-spark" />
         <span className="ticket-edge absolute top-0 right-0 h-full w-3 [--ticket-bg:var(--color-brand)]" style={{ backgroundColor: "white" }} />
       </div>
       <div className="min-w-0 flex-1">
@@ -67,7 +67,7 @@ export function BookingCard({ className = "", initialTab = "car" }: { className?
                 <legend className="label">Drive</legend>
                 <div className="grid grid-cols-2 gap-2">
                   {(["self_drive", "with_driver"] as const).map((v) => (
-                    <label key={v} className={`cursor-pointer rounded-sm border-2 px-3 py-2 text-center text-sm font-bold focus-within:outline-2 focus-within:outline-orange focus-within:outline-offset-2 ${rentalType === v ? "border-brand bg-brand text-paper" : "border-line text-brand hover:border-brand"}`}>
+                    <label key={v} className={`cursor-pointer rounded-sm border-2 px-3 py-2 text-center text-sm font-bold focus-within:outline-2 focus-within:outline-spark focus-within:outline-offset-2 ${rentalType === v ? "border-brand bg-brand text-paper" : "border-line text-brand hover:border-brand"}`}>
                       <input type="radio" name="rentalType" value={v} className="sr-only" checked={rentalType === v} onChange={() => setRentalType(v)} />
                       {v === "self_drive" ? t.card.selfDrive : t.card.withDriver}
                     </label>

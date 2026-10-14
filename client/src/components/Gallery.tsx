@@ -15,7 +15,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
         <ul className="mt-2 flex gap-2 overflow-x-auto pb-1" aria-label="Photos">
           {images.map((src, k) => (
             <li key={k} className="shrink-0">
-              <button type="button" onClick={() => setI(k)} aria-pressed={k === i} aria-label={`Show photo ${k + 1}`} className={`block h-16 w-24 overflow-hidden border-2 ${k === i ? "border-orange" : "border-transparent hover:border-brand"}`}>
+              <button type="button" onClick={() => setI(k)} aria-pressed={k === i} aria-label={`Show photo ${k + 1}`} className={`block h-16 w-24 overflow-hidden border-2 ${k === i ? "border-spark" : "border-transparent hover:border-brand"}`}>
                 <img src={src} srcSet={srcSet(src)} sizes="96px" alt="" width="96" height="64" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </button>
             </li>

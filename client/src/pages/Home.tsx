@@ -13,7 +13,7 @@ import { img800, srcSet } from "@/lib/format";
 
 export default function Home() {
   useSeo({
-    title: "Bluesparks Holdings — Car hire & short stays in Dar es Salaam",
+    title: "Blue Spark Holdings — Car hire & short stays in Dar es Salaam",
     description: "Johnson Rentals car hire (self-drive or with driver) and short-stay apartments in Dar es Salaam. Airport pickup at JNIA, stays in Masaki, Oyster Bay, Mikocheni and Kigamboni.",
   });
   const { data: settings } = useSettings();
@@ -59,8 +59,8 @@ export default function Home() {
               <figure className="col-span-4 mt-12">
                 <img src={img800(IMAGES.stays[1]!)} alt="Bedroom in an Oyster Bay apartment" width="800" height="533" loading="lazy" decoding="async" className="aspect-[3/4] w-full border-2 border-brand object-cover" />
               </figure>
-              <div className="col-span-5 col-start-2 -mt-10 bg-brand p-5 text-paper shadow-hard-orange">
-                <p className="font-display text-5xl text-orange">6</p>
+              <div className="col-span-5 col-start-2 -mt-10 bg-brand p-5 text-paper shadow-hard-spark">
+                <p className="font-display text-5xl text-spark">6</p>
                 <p className="text-sm">cars, all Toyota, all serviced by the same garage in Mikocheni.</p>
               </div>
               <div className="col-span-5 col-start-8 -mt-4 bg-paper p-5 shadow-hard">
@@ -149,7 +149,7 @@ export default function Home() {
             ["Pay how you like", "M-Pesa, Tigo Pesa, Airtel Money, Halopesa or a card online. Or reserve now and pay when you collect. The confirmation lands on WhatsApp and email."],
           ].map(([h, p], i) => (
             <li key={h} className="relative border-t-4 border-brand pt-4">
-              <span className="font-display text-7xl leading-none text-orange" aria-hidden="true">
+              <span className="font-display text-7xl leading-none text-spark" aria-hidden="true">
                 0{i + 1}
               </span>
               <h3 className="mt-2 text-2xl">{h}</h3>
@@ -201,10 +201,10 @@ export default function Home() {
             <ul className="divide-y-2 divide-line border-y-2 border-line">
               {AREAS.map((a, i) => (
                 <li key={a.name} className="grid grid-cols-12 items-baseline gap-3 py-4">
-                  <span className="col-span-2 font-display text-3xl text-orange sm:col-span-1" aria-hidden="true">
+                  <span className="col-span-2 font-display text-3xl text-spark sm:col-span-1" aria-hidden="true">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <Link to={`/stays?area=${encodeURIComponent(a.name)}`} className="col-span-10 font-display text-2xl text-brand uppercase hover:text-orange-deep sm:col-span-4">
+                  <Link to={`/stays?area=${encodeURIComponent(a.name)}`} className="col-span-10 font-display text-2xl text-brand uppercase hover:text-spark-deep sm:col-span-4">
                     {a.name}
                   </Link>
                   <span className="col-span-10 col-start-3 text-sm text-ink-soft sm:col-span-7 sm:col-start-6">{a.note}</span>
@@ -233,7 +233,7 @@ export default function Home() {
               <details key={f.q} className="group border-b-2 border-line py-4">
                 <summary className="flex items-center justify-between gap-4 font-display text-xl text-brand uppercase">
                   {f.q}
-                  <span className="shrink-0 text-2xl text-orange transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden="true">
+                  <span className="shrink-0 text-2xl text-spark transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden="true">
                     +
                   </span>
                 </summary>

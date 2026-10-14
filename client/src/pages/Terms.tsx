@@ -4,7 +4,7 @@ import { useSettings } from "@/lib/queries";
 import { useT } from "@/i18n";
 
 export default function Terms() {
-  useSeo({ title: "Terms & conditions", description: "Terms for car hire with Johnson Rentals and short stays with Bluesparks Holdings in Dar es Salaam." });
+  useSeo({ title: "Terms & conditions", description: "Terms for car hire with Johnson Rentals and short stays with Blue Spark Holdings in Dar es Salaam." });
   const { data: s } = useSettings();
   const { lang } = useT();
   const bnb = s?.bnbBrandName ?? COMPANY.staysBrand;

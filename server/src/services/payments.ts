@@ -79,7 +79,7 @@ const flutterwaveGateway: PaymentGateway = {
         redirect_url: verifyUrl(txRef),
         customer: { email: booking.customer.email, phonenumber: booking.customer.phone, name: booking.customer.fullName },
         customizations: {
-          title: "Bluesparks Holdings",
+          title: "Blue Spark Holdings",
           description: `Booking ${booking.reference} — ${booking.itemName}`,
         },
         meta: { booking_reference: booking.reference, service: booking.service },

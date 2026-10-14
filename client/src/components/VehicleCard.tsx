@@ -20,21 +20,21 @@ export function VehicleCard({ v, bookHref, compact, onChoose, chosen }: Props) {
   const src = imgSrc(v.images, FALLBACK_CAR);
   const weekly = v.pricePerWeekTzs && v.pricePerWeekTzs < v.pricePerDayTzs * 7 ? Math.round(100 - (v.pricePerWeekTzs / (v.pricePerDayTzs * 7)) * 100) : 0;
   return (
-    <article className={`group flex flex-col border-2 bg-white ${chosen ? "border-orange shadow-hard-orange" : "border-brand"}`}>
+    <article className={`group flex flex-col border-2 bg-white ${chosen ? "border-spark shadow-hard-spark" : "border-brand"}`}>
       <Link to={`/cars/${v.slug}`} className="relative block aspect-[3/2] overflow-hidden bg-cream" tabIndex={onChoose ? -1 : 0} aria-hidden={onChoose ? true : undefined}>
         <img src={src} srcSet={srcSet(src)} sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" alt={v.name} width="800" height="533" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none" />
         <span className="absolute top-2 left-2 bg-brand px-2 py-0.5 text-[11px] font-bold tracking-wider text-paper uppercase">{v.category}</span>
-        {weekly > 0 && <span className="absolute top-2 right-2 bg-orange px-2 py-0.5 text-[11px] font-bold tracking-wider text-white uppercase">Weekly −{weekly}%</span>}
+        {weekly > 0 && <span className="absolute top-2 right-2 bg-spark px-2 py-0.5 text-[11px] font-bold tracking-wider text-white uppercase">Weekly −{weekly}%</span>}
       </Link>
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-2xl leading-none">
-            <Link to={`/cars/${v.slug}`} className="hover:text-orange-deep">
+            <Link to={`/cars/${v.slug}`} className="hover:text-spark-deep">
               {v.name}
             </Link>
           </h3>
           <p className="shrink-0 text-right leading-none whitespace-nowrap">
-            <span className="font-display text-2xl text-orange">{fmt(v.pricePerDayTzs)}</span>
+            <span className="font-display text-2xl text-spark">{fmt(v.pricePerDayTzs)}</span>
             <span className="block text-xs text-ink-soft">{t.common.perDay}</span>
           </p>
         </div>

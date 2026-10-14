@@ -1,4 +1,4 @@
-# Bluesparks API contract
+# Blue Spark API contract
 
 Base URL: `/api`. JSON in/out. Money is always integer **TZS** in the API; the client converts to USD for display using `settings.usdRate`. Dates are `YYYY-MM-DD`, times `HH:mm`.
 

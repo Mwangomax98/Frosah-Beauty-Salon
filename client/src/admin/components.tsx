@@ -109,7 +109,7 @@ export function ImageList({ images, onChange }: { images: string[]; onChange: (v
       <input type="file" accept="image/*" className="mt-2 block w-full text-sm file:mr-3 file:rounded-sm file:border-0 file:bg-brand file:px-3 file:py-1.5 file:font-bold file:text-paper" onChange={(e) => upload(e.target.files?.[0])} disabled={pct !== null} aria-label="Upload image" />
       {pct !== null && (
         <div className="mt-1 h-2 w-full bg-cream" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-          <div className="h-2 bg-orange" style={{ width: `${pct}%` }} />
+          <div className="h-2 bg-spark" style={{ width: `${pct}%` }} />
         </div>
       )}
       {err && <p className="mt-1 text-xs text-danger">{err}</p>}
@@ -125,7 +125,7 @@ export function CheckGrid({ label, options, value, onChange, labels }: { label: 
       <div className="grid grid-cols-2 gap-1 sm:grid-cols-3">
         {options.map((o) => (
           <label key={o} className="flex items-center gap-2 text-sm">
-            <input type="checkbox" className="accent-orange" checked={value.includes(o)} onChange={(e) => onChange(e.target.checked ? [...value, o] : value.filter((x) => x !== o))} />
+            <input type="checkbox" className="accent-spark" checked={value.includes(o)} onChange={(e) => onChange(e.target.checked ? [...value, o] : value.filter((x) => x !== o))} />
             {labels?.[o] ?? o}
           </label>
         ))}
@@ -173,7 +173,7 @@ export function BarChart({ data, fmt }: { data: { label: string; a: number; b: n
                   {d.label} cars: {fmt(d.a)}
                 </title>
               </rect>
-              <rect x={x + 2} y={H - padB - hb} width={bw} height={hb} fill="var(--color-orange)">
+              <rect x={x + 2} y={H - padB - hb} width={bw} height={hb} fill="var(--color-spark)">
                 <title>
                   {d.label} stays: {fmt(d.b)}
                 </title>
@@ -190,7 +190,7 @@ export function BarChart({ data, fmt }: { data: { label: string; a: number; b: n
           <i className="inline-block h-3 w-3 bg-brand" /> Cars
         </span>
         <span className="inline-flex items-center gap-1">
-          <i className="inline-block h-3 w-3 bg-orange" /> Stays
+          <i className="inline-block h-3 w-3 bg-spark" /> Stays
         </span>
         <span className="ml-auto">Peak {fmt(max)}</span>
       </figcaption>

@@ -65,7 +65,7 @@ export default function BookingConfirmation() {
       </p>
 
       {addCar && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-2 border-orange bg-white p-5 shadow-hard-orange">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-2 border-spark bg-white p-5 shadow-hard-spark">
           <div>
             <p className="eyebrow">Next</p>
             <p className="text-xl font-bold text-brand">Now let's get you a car for the same dates — {settings?.bundleDiscountPercent ?? 10}% off.</p>
@@ -92,7 +92,7 @@ export default function BookingConfirmation() {
           </dl>
           <QuoteTable quote={b.quote} />
           {isStay && d.checkinInstructions && (
-            <section className="border-l-4 border-orange bg-cream p-5">
+            <section className="border-l-4 border-spark bg-cream p-5">
               <h2 className="text-2xl">Check-in instructions</h2>
               <p className="mt-2 text-sm whitespace-pre-line">{String(d.checkinInstructions)}</p>
             </section>

@@ -2,7 +2,7 @@ import type { Booking, Property, Settings } from "@bluesparks/shared";
 import { COMPANY, PICKUP_LOCATIONS, formatMoney } from "@bluesparks/shared";
 import { config } from "../config.ts";
 
-// Plain, readable HTML emails in Bluesparks colours. Written like a local owner would, not a marketing team.
+// Plain, readable HTML emails in Blue Spark colours. Written like a local owner would, not a marketing team.
 
 const COLORS = { bg: "#FAF6EF", accent: "#F26B1D", text: "#1E1A16", muted: "#6B6259", line: "#E8DFD2" };
 

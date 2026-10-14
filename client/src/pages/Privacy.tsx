@@ -4,7 +4,7 @@ import { useSettings } from "@/lib/queries";
 import { useT } from "@/i18n";
 
 export default function Privacy() {
-  useSeo({ title: "Privacy policy", description: "How Bluesparks Holdings handles your personal data when you hire a car or book a stay." });
+  useSeo({ title: "Privacy policy", description: "How Blue Spark Holdings handles your personal data when you hire a car or book a stay." });
   const { data: s } = useSettings();
   const { lang } = useT();
   return (

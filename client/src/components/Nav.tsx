@@ -25,11 +25,11 @@ export function Nav() {
     { to: "/about", label: t.nav.about },
     { to: "/contact", label: t.nav.contact },
   ];
-  const linkCls = ({ isActive }: { isActive: boolean }) => `relative py-2 text-sm font-bold tracking-wide uppercase transition-colors ${isActive ? "text-orange" : "text-paper hover:text-orange"}`;
+  const linkCls = ({ isActive }: { isActive: boolean }) => `relative py-2 text-sm font-bold tracking-wide uppercase transition-colors ${isActive ? "text-spark" : "text-paper hover:text-spark"}`;
 
   return (
     <header className="sticky top-0 z-50 bg-brand text-paper">
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:bg-orange focus:px-3 focus:py-2 focus:text-white">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:bg-spark focus:px-3 focus:py-2 focus:text-white">
         {t.nav.skip}
       </a>
       <div className="container-x flex h-16 items-center justify-between gap-4">
@@ -59,7 +59,7 @@ export function Nav() {
           <ul className="container-x flex flex-col py-3">
             {links.map((l) => (
               <li key={l.to} className="border-b border-paper/10 last:border-0">
-                <NavLink to={l.to} className={({ isActive }) => `flex items-baseline justify-between py-3.5 font-display text-2xl uppercase ${isActive ? "text-orange" : "text-paper"}`}>
+                <NavLink to={l.to} className={({ isActive }) => `flex items-baseline justify-between py-3.5 font-display text-2xl uppercase ${isActive ? "text-spark" : "text-paper"}`}>
                   {l.label}
                   {l.sub && <span className="font-sans text-xs font-normal normal-case text-paper/60">{l.sub}</span>}
                 </NavLink>

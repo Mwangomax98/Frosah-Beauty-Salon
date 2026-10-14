@@ -42,7 +42,7 @@ export function Tabs<T extends string>({ tabs, value, onChange, className = "", 
             className={
               variant === "ticket"
                 ? `font-display flex-1 px-3 py-2.5 text-lg tracking-tight uppercase transition-colors ${active ? "bg-brand text-paper" : "bg-cream text-brand hover:bg-line/60"}`
-                : `-mb-0.5 border-b-4 px-4 py-2 text-sm font-bold ${active ? "border-orange text-brand" : "border-transparent text-ink-soft hover:text-brand"}`
+                : `-mb-0.5 border-b-4 px-4 py-2 text-sm font-bold ${active ? "border-spark text-brand" : "border-transparent text-ink-soft hover:text-brand"}`
             }
           >
             {t.label}

@@ -20,7 +20,7 @@ function setMeta(selector: string, attr: "name" | "property", key: string, conte
 /** Per-route <title> + meta. Tiny on purpose — no helmet dependency. */
 export function useSeo({ title, description, noindex, image }: Seo) {
   useEffect(() => {
-    const full = title.includes("Bluesparks") ? title : `${title} — Bluesparks Holdings, Dar es Salaam`;
+    const full = title.includes("Blue Spark") ? title : `${title} — Blue Spark Holdings, Dar es Salaam`;
     document.title = full;
     setMeta('meta[property="og:title"]', "property", "og:title", full);
     if (description) {

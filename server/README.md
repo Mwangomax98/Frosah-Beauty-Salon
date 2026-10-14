@@ -1,6 +1,6 @@
-# Bluesparks API server
+# Blue Spark API server
 
-Express 5 + TypeScript + MySQL backend for Johnson Rentals (car hire) and Bluesparks Stays (apartments). The API contract is in [`docs/API.md`](../docs/API.md); shared types and pricing live in [`shared/`](../shared).
+Express 5 + TypeScript + MySQL backend for Johnson Rentals (car hire) and Blue Spark Stays (apartments). The API contract is in [`docs/API.md`](../docs/API.md); shared types and pricing live in [`shared/`](../shared).
 
 ## 1. Local setup (first time)
 

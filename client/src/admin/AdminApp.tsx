@@ -14,7 +14,7 @@ import Settings from "./pages/Settings";
 import { useSeo } from "@/lib/useSeo";
 
 export default function AdminApp() {
-  useSeo({ title: "Admin — Bluesparks", noindex: true });
+  useSeo({ title: "Admin — Blue Spark", noindex: true });
   return (
     <AuthProvider>
       <Routes>

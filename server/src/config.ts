@@ -51,7 +51,7 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().default(587),
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASS: z.string().optional().default(""),
-  SMTP_FROM: z.string().default("Bluesparks Holdings <no-reply@localhost>"),
+  SMTP_FROM: z.string().default("Blue Spark Holdings <no-reply@localhost>"),
   PAYMENT_GATEWAY: z.enum(["mock", "flutterwave"]).default("mock"),
   FLUTTERWAVE_SECRET_KEY: z.string().optional().default(""),
   FLUTTERWAVE_PUBLIC_KEY: z.string().optional().default(""),

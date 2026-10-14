@@ -132,7 +132,7 @@ export function DocumentUpload({ kind, label, hint, docs, onChange, required }: 
       <label htmlFor={id} className="label">
         {label}
         {required && (
-          <span className="ml-0.5 text-orange" aria-hidden="true">
+          <span className="ml-0.5 text-spark" aria-hidden="true">
             *
           </span>
         )}
@@ -152,7 +152,7 @@ export function DocumentUpload({ kind, label, hint, docs, onChange, required }: 
       {pct !== null && (
         <div className="mt-2" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Upload progress">
           <div className="h-2 w-full bg-cream">
-            <div className="h-2 bg-orange transition-[width]" style={{ width: `${pct}%` }} />
+            <div className="h-2 bg-spark transition-[width]" style={{ width: `${pct}%` }} />
           </div>
           <p className="mt-1 text-xs text-ink-soft">Uploading… {pct}%</p>
         </div>
@@ -192,7 +192,7 @@ export function QuoteTable({ quote, title = "Itemised price", depositLabel }: { 
           <tr>
             <td className="px-4 py-3 text-base font-bold">Total</td>
             <td className="px-4 py-3 text-right">
-              <span className="font-display text-2xl text-orange">{fmt(quote.totalTzs)}</span>
+              <span className="font-display text-2xl text-spark">{fmt(quote.totalTzs)}</span>
               <span className="block text-xs text-ink-soft">{fmtBoth(quote.totalTzs)}</span>
             </td>
           </tr>

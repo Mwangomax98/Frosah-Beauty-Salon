@@ -85,7 +85,7 @@ export default function Bookings() {
             {q.data?.items.map((b) => (
               <tr key={b.id}>
                 <td>
-                  <Link to={`/admin/bookings/${b.id}`} className="font-mono font-bold text-brand hover:text-orange-deep">
+                  <Link to={`/admin/bookings/${b.id}`} className="font-mono font-bold text-brand hover:text-spark-deep">
                     {b.reference}
                   </Link>
                 </td>

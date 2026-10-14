@@ -1,10 +1,10 @@
 /**
  * Kanga/kitenge-inspired geometric divider: a repeating row of triangles and diamonds
- * in brand + orange. Use sparingly (2–3 times per page at most).
+ * in brand + spark. Use sparingly (2–3 times per page at most).
  */
 export function KangaDivider({ className = "", invert = false }: { className?: string; invert?: boolean }) {
   const a = invert ? "var(--color-paper)" : "var(--color-brand)";
-  const b = "var(--color-orange)";
+  const b = "var(--color-spark)";
   return (
     <div className={`w-full overflow-hidden ${className}`} aria-hidden="true">
       <svg width="100%" height="22" viewBox="0 0 1200 22" preserveAspectRatio="none" className="block">

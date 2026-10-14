@@ -14,7 +14,7 @@ async function main() {
 
   const app = createApp();
   const server = app.listen(config.port, () => {
-    console.log(`Bluesparks API listening on http://localhost:${config.port} (${config.env}, payments=${config.payments.gateway})`);
+    console.log(`Blue Spark API listening on http://localhost:${config.port} (${config.env}, payments=${config.payments.gateway})`);
   });
 
   const stopIcal = startIcalScheduler();

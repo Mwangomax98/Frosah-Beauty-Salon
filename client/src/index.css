@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   Bluesparks Holdings design tokens.
+   Blue Spark Holding Company Ltd. design tokens (colours sampled from the logo file).
    Every colour used anywhere in the site lives here.
 ------------------------------------------------------------------ */
 @theme {
@@ -10,19 +10,20 @@
   --color-cream: #f1eadd;
   --color-line: #ddd3c2; /* hairlines on paper */
 
-  /* Action colour — buttons, prices, route line, highlights only */
-  --color-orange: #f26b1d;
-  --color-orange-deep: #c94f0b;
+  /* Action colour — buttons, prices, route line, highlights only.
+     Sampled from the Blue Spark logo: the royal blue of the "B" and the "BLUE" wordmark. */
+  --color-spark: #015cd9;
+  --color-spark-deep: #0133a5; /* the B's shaded edge — hover / pressed */
+  --color-sky: #02a2fb; /* the swoosh and the star — large display accents only (2.9:1 on paper) */
 
   /* Text */
   --color-ink: #1e1a16;
   --color-ink-soft: #5c544b; /* 6.9:1 on paper */
 
-  /* PLACEHOLDER — replace with the exact colour sampled from the Bluesparks logo file */
-  --color-brand: #0b2545;
-  /* PLACEHOLDER — hover/pressed version of the logo colour (about 15% darker) */
-  --color-brand-deep: #071a31;
-  --color-brand-tint: #d9e1ee; /* brand at ~15% on paper, for soft fills */
+  /* Structure & identity — the navy of "SPARK" / "HOLDING COMPANY LTD." in the logo */
+  --color-brand: #081132;
+  --color-brand-deep: #030f36; /* the darkest navy in the wordmark — hover / pressed */
+  --color-brand-tint: #dbe7f8; /* royal blue at ~15% on paper, for soft fills */
 
   /* Status (admin + forms only) */
   --color-ok: #1f7a4d;
@@ -33,7 +34,7 @@
   --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --shadow-hard: 4px 4px 0 0 var(--color-brand);
-  --shadow-hard-orange: 4px 4px 0 0 var(--color-orange-deep);
+  --shadow-hard-spark: 4px 4px 0 0 var(--color-spark-deep);
 
   --breakpoint-xs: 25rem;
 }
@@ -54,7 +55,7 @@
     line-height: 1.55;
   }
   ::selection {
-    background: var(--color-orange);
+    background: var(--color-spark);
     color: #fff;
   }
   h1,
@@ -69,7 +70,7 @@
     color: var(--color-brand);
   }
   :focus-visible {
-    outline: 2px solid var(--color-orange);
+    outline: 2px solid var(--color-spark);
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -108,19 +109,19 @@
   @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
 }
 @utility eyebrow {
-  @apply text-xs font-bold tracking-[0.18em] uppercase text-orange;
+  @apply text-xs font-bold tracking-[0.18em] uppercase text-spark;
 }
 @utility link-underline {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
-  text-decoration-color: var(--color-orange);
+  text-decoration-color: var(--color-spark);
   &:hover {
-    color: var(--color-orange-deep);
+    color: var(--color-spark-deep);
   }
 }
 @utility field {
-  @apply block w-full rounded-sm border-2 border-line bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-soft/70 focus:border-brand focus:outline-none focus-visible:outline-2 focus-visible:outline-orange focus-visible:outline-offset-2 disabled:bg-cream disabled:text-ink-soft;
+  @apply block w-full rounded-sm border-2 border-line bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-soft/70 focus:border-brand focus:outline-none focus-visible:outline-2 focus-visible:outline-spark focus-visible:outline-offset-2 disabled:bg-cream disabled:text-ink-soft;
   &[aria-invalid="true"] {
     border-color: var(--color-danger);
   }
@@ -141,15 +142,15 @@
   }
 }
 @utility btn-primary {
-  @apply btn bg-orange text-white shadow-hard-orange hover:bg-orange-deep;
+  @apply btn bg-spark text-white shadow-hard-spark hover:bg-spark-deep;
   &:active {
-    box-shadow: 0 0 0 0 var(--color-orange-deep);
+    box-shadow: 0 0 0 0 var(--color-spark-deep);
   }
 }
 @utility btn-brand {
-  @apply btn bg-brand text-paper shadow-hard-orange hover:bg-brand-deep;
+  @apply btn bg-brand text-paper shadow-hard-spark hover:bg-brand-deep;
   &:active {
-    box-shadow: 0 0 0 0 var(--color-orange-deep);
+    box-shadow: 0 0 0 0 var(--color-spark-deep);
   }
 }
 @utility btn-ghost {
@@ -157,9 +158,9 @@
 }
 @utility btn-paper {
   @apply btn bg-paper text-brand hover:bg-cream;
-  box-shadow: 4px 4px 0 0 var(--color-orange);
+  box-shadow: 4px 4px 0 0 var(--color-spark);
   &:active {
-    box-shadow: 0 0 0 0 var(--color-orange);
+    box-shadow: 0 0 0 0 var(--color-spark);
   }
 }
 @utility btn-danger {
