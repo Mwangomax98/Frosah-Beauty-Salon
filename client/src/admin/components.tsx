@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import type { BookingStatus, PaymentStatus } from "@bluesparks/shared";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
-import { uploadWithProgress, errorMessage } from "@/lib/api";
+import { apiUrl, uploadWithProgress, errorMessage } from "@/lib/api";
 
 export function PageHead({ title, children, actions }: { title: string; children?: ReactNode; actions?: ReactNode }) {
   return (
@@ -79,7 +79,7 @@ export function ImageList({ images, onChange }: { images: string[]; onChange: (v
     setPct(0);
     try {
       const res = await uploadWithProgress<{ url: string }>("/admin/uploads/image", form, setPct);
-      onChange([...images, res.url]);
+      onChange([...images, apiUrl(res.url)]);
     } catch (e) {
       setErr(errorMessage(e));
     } finally {

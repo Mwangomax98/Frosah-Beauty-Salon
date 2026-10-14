@@ -1,4 +1,9 @@
 // Typed fetch wrapper for /api. Handles the server error shape and attaches the admin token.
+// VITE_API_URL points at the API origin when the client is hosted separately (e.g. Vercel + a Node host);
+// leave it unset for same-origin deployments (Vite dev proxy / nginx).
+export const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+/** Absolute URL for an API-served path such as "/uploads/images/x.webp". */
+export const apiUrl = (path: string) => (path.startsWith("http") ? path : `${API_BASE}${path}`);
 
 export interface ApiErrorShape {
   code: string;
@@ -63,7 +68,7 @@ export async function request<T>(method: string, path: string, body?: unknown, i
     headers["Content-Type"] = "application/json";
     payload = JSON.stringify(body);
   }
-  const res = await fetch(`/api${path}${qs(init?.query)}`, { method, headers, body: payload, credentials: "same-origin", signal: init?.signal });
+  const res = await fetch(`${API_BASE}/api${path}${qs(init?.query)}`, { method, headers, body: payload, credentials: "include", signal: init?.signal });
   return (await parse(res)) as T;
 }
 
@@ -79,7 +84,8 @@ export const api = {
 export function uploadWithProgress<T>(path: string, form: FormData, onProgress: (pct: number) => void): Promise<T> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/api${path}`);
+    xhr.open("POST", `${API_BASE}/api${path}`);
+    xhr.withCredentials = true;
     if (adminToken) xhr.setRequestHeader("Authorization", `Bearer ${adminToken}`);
     xhr.withCredentials = true;
     xhr.upload.onprogress = (e) => {

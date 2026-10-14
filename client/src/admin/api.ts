@@ -1,7 +1,7 @@
 // Admin data hooks. All under /api/admin, token attached by lib/api.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { BlockedDate, Booking, DeliveryZone, Extra, Payment, PromoCode, Property, SeasonalRate, Settings, Vehicle, Service } from "@bluesparks/shared";
-import { api, getAdminToken, qs } from "@/lib/api";
+import { API_BASE, api, getAdminToken, qs } from "@/lib/api";
 
 export type AdminProperty = Property & { icalExportUrl?: string; icalToken?: string };
 export interface BookingFilters {
@@ -78,5 +78,5 @@ export function useCrud<T extends { id: number }>(key: string, path: string) {
 
 export function csvUrl(f: BookingFilters) {
   const token = getAdminToken();
-  return `/api/admin/bookings.csv${qs({ ...f, page: undefined, pageSize: undefined, ...(token ? { token } : {}) })}`;
+  return `${API_BASE}/api/admin/bookings.csv${qs({ ...f, page: undefined, pageSize: undefined, ...(token ? { token } : {}) })}`;
 }

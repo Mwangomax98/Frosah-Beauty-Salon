@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Booking, BookingStatus, PaymentStatus } from "@bluesparks/shared";
 import { useAdminBooking } from "../api";
 import { PageHead, StatusBadge, PayBadge, ConfirmButton } from "../components";
-import { api, errorMessage, getAdminToken } from "@/lib/api";
+import { API_BASE, api, errorMessage, getAdminToken } from "@/lib/api";
 import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
@@ -40,7 +40,7 @@ export default function BookingDetail() {
   if (q.isError) return <ErrorState error={q.error} retry={() => q.refetch()} />;
   const b = q.data;
   const token = getAdminToken();
-  const docUrl = (path: string) => `/api/admin/documents/${encodeURIComponent(path)}${token ? `?token=${encodeURIComponent(token)}` : ""}`;
+  const docUrl = (path: string) => `${API_BASE}/api/admin/documents/${encodeURIComponent(path)}${token ? `?token=${encodeURIComponent(token)}` : ""}`;
 
   return (
     <>

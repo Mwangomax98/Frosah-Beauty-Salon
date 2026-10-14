@@ -56,6 +56,9 @@ export const requireAdmin: RequestHandler = (req, _res, next) => {
   let token: string | undefined;
   if (header?.startsWith("Bearer ")) token = header.slice(7).trim();
   else if (req.cookies?.[ADMIN_COOKIE]) token = String(req.cookies[ADMIN_COOKIE]);
+  // Plain <a download> links (CSV export, document view) can't set headers or send a
+  // cross-site cookie, so GET requests may carry the token as a query parameter.
+  else if (req.method === "GET" && typeof req.query.token === "string") token = req.query.token;
   const user = token ? verifyToken(token) : null;
   if (!user) return next(unauthorized("Please sign in again"));
   req.admin = user;
