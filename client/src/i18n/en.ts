@@ -94,6 +94,8 @@ export const en = {
     rights: "All rights reserved.",
     madeIn: "Made in Dar es Salaam.",
   },
-} as const;
+};
 
-export type Dictionary = typeof en;
+/** Deep string-typed shape of the dictionary, so translations are checked for missing keys but not literal values. */
+type Deep<T> = { [K in keyof T]: T[K] extends string ? string : Deep<T[K]> };
+export type Dictionary = Deep<typeof en>;
