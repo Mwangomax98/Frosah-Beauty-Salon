@@ -29,7 +29,7 @@ export function RouteMap({ className = "", stayName = "Masaki sea-view apartment
         <path
           d={PATH}
           fill="none"
-          stroke="var(--color-orange)"
+          stroke="var(--color-spark)"
           strokeWidth="5"
           strokeLinecap="round"
           strokeDasharray={LEN}
@@ -40,7 +40,7 @@ export function RouteMap({ className = "", stayName = "Masaki sea-view apartment
           return (
             <g key={s.label} style={{ opacity: `clamp(0, (var(--p, 1) - ${appearAt}) / 0.08, 1)` }}>
               <circle cx={s.x} cy={s.y} r="11" fill="var(--color-paper)" stroke="var(--color-brand)" strokeWidth="4" />
-              <circle cx={s.x} cy={s.y} r="4" fill="var(--color-orange)" />
+              <circle cx={s.x} cy={s.y} r="4" fill="var(--color-spark)" />
               <text x={s.x} y={s.y + (i % 2 === 0 ? 32 : -20)} textAnchor="middle" fontFamily="var(--font-display)" fontSize="22" fill="var(--color-brand)" letterSpacing="0.5">
                 {s.label.toUpperCase()}
               </text>
@@ -52,7 +52,7 @@ export function RouteMap({ className = "", stayName = "Masaki sea-view apartment
         })}
         {/* end pin: house marker that scales open */}
         <g style={{ opacity: "clamp(0, (var(--p, 1) - 0.78) / 0.1, 1)", transform: "translate(960px, 105px) scale(clamp(0.2, (var(--p, 1) - 0.78) / 0.15, 1))", transformOrigin: "0 0" }}>
-          <path d="M-18 4 L0 -16 L18 4 V22 H-18 Z" fill="var(--color-orange)" stroke="var(--color-paper)" strokeWidth="3" />
+          <path d="M-18 4 L0 -16 L18 4 V22 H-18 Z" fill="var(--color-spark)" stroke="var(--color-paper)" strokeWidth="3" />
           <rect x="-5" y="8" width="10" height="14" fill="var(--color-paper)" />
         </g>
       </svg>
@@ -87,11 +87,11 @@ function RouteMapVertical({ className, stayName, stayHref }: { className: string
     <div className={`grid grid-cols-[120px_1fr] items-end gap-3 ${className}`}>
       <svg viewBox={`0 0 120 ${h}`} className="block h-auto w-full overflow-visible" role="img" aria-label="Route from JNIA airport through Masaki, City Centre and Kigamboni to your stay">
         <path d={V_PATH} fill="none" stroke="var(--color-brand)" strokeOpacity="0.18" strokeWidth="2" strokeDasharray="4 8" />
-        <path d={V_PATH} fill="none" stroke="var(--color-orange)" strokeWidth="5" strokeLinecap="round" strokeDasharray={V_LEN} style={{ strokeDashoffset: `calc(${V_LEN} * (1 - clamp(0, (var(--p, 1) - 0.12) / 0.7, 1)))` }} />
+        <path d={V_PATH} fill="none" stroke="var(--color-spark)" strokeWidth="5" strokeLinecap="round" strokeDasharray={V_LEN} style={{ strokeDashoffset: `calc(${V_LEN} * (1 - clamp(0, (var(--p, 1) - 0.12) / 0.7, 1)))` }} />
         {V_STOPS.map((s, i) => (
           <g key={s.label} style={{ opacity: `clamp(0, (var(--p, 1) - ${0.12 + i * 0.17}) / 0.08, 1)` }}>
             <circle cx={s.x} cy={s.y} r="11" fill="var(--color-paper)" stroke="var(--color-brand)" strokeWidth="4" />
-            <circle cx={s.x} cy={s.y} r="4" fill="var(--color-orange)" />
+            <circle cx={s.x} cy={s.y} r="4" fill="var(--color-spark)" />
             <text x={s.x + 22} y={s.y + 2} fontFamily="var(--font-display)" fontSize="22" fill="var(--color-brand)">
               {s.label.toUpperCase()}
             </text>
@@ -101,7 +101,7 @@ function RouteMapVertical({ className, stayName, stayHref }: { className: string
           </g>
         ))}
         <g style={{ opacity: "clamp(0, (var(--p, 1) - 0.78) / 0.1, 1)", transform: `translate(${V_END.x}px, ${V_END.y}px) scale(clamp(0.2, (var(--p, 1) - 0.78) / 0.15, 1))`, transformOrigin: "0 0" }}>
-          <path d="M-18 4 L0 -16 L18 4 V22 H-18 Z" fill="var(--color-orange)" stroke="var(--color-paper)" strokeWidth="3" />
+          <path d="M-18 4 L0 -16 L18 4 V22 H-18 Z" fill="var(--color-spark)" stroke="var(--color-paper)" strokeWidth="3" />
           <rect x="-5" y="8" width="10" height="14" fill="var(--color-paper)" />
         </g>
       </svg>

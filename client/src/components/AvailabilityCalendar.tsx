@@ -69,7 +69,7 @@ function Month({ year, month, blocked, today }: { year: number; month: number; b
               const isBlocked = blocked.some((b) => isDateInRange(iso, b.start, b.end));
               return (
                 <td key={c} className="p-0.5">
-                  <span aria-label={`${iso}${isBlocked ? ", unavailable" : past ? ", past" : ", available"}`} className={`block py-1.5 tabular ${past ? "text-line" : isBlocked ? "bg-[repeating-linear-gradient(45deg,var(--color-brand)_0_2px,transparent_2px_5px)] text-brand" : "bg-white ring-1 ring-line"} ${iso === today ? "font-bold text-orange" : ""}`}>
+                  <span aria-label={`${iso}${isBlocked ? ", unavailable" : past ? ", past" : ", available"}`} className={`block py-1.5 tabular ${past ? "text-line" : isBlocked ? "bg-[repeating-linear-gradient(45deg,var(--color-brand)_0_2px,transparent_2px_5px)] text-brand" : "bg-white ring-1 ring-line"} ${iso === today ? "font-bold text-spark" : ""}`}>
                     {Number(iso.slice(-2))}
                   </span>
                 </td>

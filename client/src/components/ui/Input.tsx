@@ -14,7 +14,7 @@ export function Field({ label, hint, error, required, className = "", id, childr
       <label htmlFor={id} className="label">
         {label}
         {required && (
-          <span className="ml-0.5 text-orange" aria-hidden="true">
+          <span className="ml-0.5 text-spark" aria-hidden="true">
             *
           </span>
         )}
@@ -88,7 +88,7 @@ export function Checkbox({ label, error, id: givenId, className = "", ...rest }:
   return (
     <div className={className}>
       <label htmlFor={id} className="flex cursor-pointer items-start gap-3 text-sm">
-        <input id={id} type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-orange" aria-invalid={error ? "true" : undefined} aria-describedby={error ? `${id}-err` : undefined} {...rest} />
+        <input id={id} type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-spark" aria-invalid={error ? "true" : undefined} aria-describedby={error ? `${id}-err` : undefined} {...rest} />
         <span>{label}</span>
       </label>
       {error && (
@@ -109,7 +109,7 @@ export function SegmentedRadio<T extends string>({ label, name, value, onChange,
         {options.map((o) => {
           const active = o.value === value;
           return (
-            <label key={o.value} className={`flex cursor-pointer flex-col rounded-sm border-2 px-3 py-2 text-sm font-bold transition-colors focus-within:outline-2 focus-within:outline-orange focus-within:outline-offset-2 ${active ? "border-brand bg-brand text-paper" : "border-line bg-white text-brand hover:border-brand"}`}>
+            <label key={o.value} className={`flex cursor-pointer flex-col rounded-sm border-2 px-3 py-2 text-sm font-bold transition-colors focus-within:outline-2 focus-within:outline-spark focus-within:outline-offset-2 ${active ? "border-brand bg-brand text-paper" : "border-line bg-white text-brand hover:border-brand"}`}>
               <input type="radio" name={name} value={o.value} checked={active} onChange={() => onChange(o.value)} className="sr-only" />
               <span>{o.label}</span>
               {o.hint && <span className={`text-xs font-normal ${active ? "text-paper/80" : "text-ink-soft"}`}>{o.hint}</span>}

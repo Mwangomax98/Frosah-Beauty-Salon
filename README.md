@@ -1,9 +1,9 @@
-# Bluesparks Holdings — website & booking system
+# Blue Spark Holdings — website & booking system
 
 One site for two Dar es Salaam services:
 
 - **Johnson Rentals** — car hire, self-drive or with driver.
-- **Bluesparks Stays** (placeholder name until the BnB brand is supplied) — short-stay apartments and houses.
+- **Blue Spark Stays** (placeholder name until the BnB brand is supplied) — short-stay apartments and houses.
 
 One design system, two booking flows, one admin dashboard, vendor notifications by email + WhatsApp, iCal sync with Airbnb / Booking.com.
 
@@ -47,8 +47,8 @@ Useful commands: `npm run typecheck` (all workspaces), `npm test` (server tests 
 
 | Item | Where |
 |---|---|
-| Logo colour (currently a clearly marked placeholder) | `client/src/index.css` → `--color-brand`, `--color-brand-deep` |
-| Logo SVG | `client/src/components/brand/Logo.tsx` |
+| Logo colours — already sampled from the supplied logo (navy `#081132`, royal blue `#015CD9`, deep blue `#0133A5`, sky `#02A2FB`) | `client/src/index.css` |
+| Logo files — already cut from the supplied JPG; replace with vector exports when available | `client/public/brand/` |
 | Photos (free Unsplash placeholders are bundled) | `client/public/images/placeholders/` + `client/src/content/images.ts` |
 | BnB brand name | Admin → Settings → "BnB brand name" |
 | Business WhatsApp number, vendor email, phone, address | Admin → Settings |

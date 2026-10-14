@@ -33,7 +33,7 @@ export function Hero({ stayName, stayHref }: { stayName?: string; stayHref?: str
             <div className="relative z-0 col-span-7 flex flex-col justify-start pt-8">
               <h1 id="hero-title" className="font-display text-brand" style={{ fontSize: "clamp(4rem, 12.5vw, 12.5rem)" }}>
                 <span className="block">{t.hero.land}</span>
-                <span className="block text-orange">{t.hero.drive}</span>
+                <span className="block text-spark">{t.hero.drive}</span>
                 <span className="block">{t.hero.sleep}</span>
               </h1>
             </div>
@@ -66,7 +66,7 @@ export function Hero({ stayName, stayHref }: { stayName?: string; stayHref?: str
           </div>
 
           {/* Stay photo reveals on scroll from the right */}
-          <div className="absolute right-0 bottom-[41%] z-[4] h-[24%] w-[30%] overflow-hidden border-l-4 border-orange" style={{ clipPath: "inset(0 0 0 calc((1 - clamp(0, (var(--p, 1) - 0.6) / 0.25, 1)) * 100%))" }} aria-hidden="true">
+          <div className="absolute right-0 bottom-[41%] z-[4] h-[24%] w-[30%] overflow-hidden border-l-4 border-spark" style={{ clipPath: "inset(0 0 0 calc((1 - clamp(0, (var(--p, 1) - 0.6) / 0.25, 1)) * 100%))" }} aria-hidden="true">
             <img src={IMAGES.heroStay} srcSet={`${img800(IMAGES.heroStay)} 800w, ${IMAGES.heroStay} 1600w`} sizes="36vw" alt="" width="1600" height="1000" loading="lazy" decoding="async" className="h-full w-full object-cover" />
             <span className="absolute bottom-3 left-3 bg-brand px-2 py-1 font-display text-sm tracking-wide text-paper uppercase">Then: your stay</span>
           </div>
@@ -87,7 +87,7 @@ export function Hero({ stayName, stayHref }: { stayName?: string; stayHref?: str
             <div className="relative">
               <h1 className="relative z-0 font-display text-brand" style={{ fontSize: "clamp(3.6rem, 17vw, 7rem)" }}>
                 <span className="block">{t.hero.land}</span>
-                <span className="block text-orange">{t.hero.drive}</span>
+                <span className="block text-spark">{t.hero.drive}</span>
                 <span className="block">{t.hero.sleep}</span>
               </h1>
               {/* car cut-out tucked into the headline's lower right, in front of the letters */}

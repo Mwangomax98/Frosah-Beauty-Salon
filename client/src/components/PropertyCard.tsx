@@ -22,7 +22,7 @@ export function PropertyCard({ p, bookHref, onChoose, chosen, compact }: Props) 
   const [i, setI] = useState(0);
   const src = images[i] ?? images[0]!;
   return (
-    <article className={`group flex flex-col border-2 bg-white ${chosen ? "border-orange shadow-hard-orange" : "border-brand"}`}>
+    <article className={`group flex flex-col border-2 bg-white ${chosen ? "border-spark shadow-hard-spark" : "border-brand"}`}>
       <div className="relative aspect-[4/3] overflow-hidden bg-cream">
         <Link to={`/stays/${p.slug}`} tabIndex={onChoose ? -1 : 0} aria-hidden={onChoose ? true : undefined}>
           <img src={src} srcSet={srcSet(src)} sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" alt={`${p.name}, ${p.area}`} width="800" height="600" loading="lazy" decoding="async" className="h-full w-full object-cover" />
@@ -31,7 +31,7 @@ export function PropertyCard({ p, bookHref, onChoose, chosen, compact }: Props) 
         {images.length > 1 && (
           <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1.5" role="group" aria-label="Photos">
             {images.map((_, k) => (
-              <button key={k} type="button" aria-label={`Photo ${k + 1} of ${images.length}`} aria-pressed={k === i} onClick={() => setI(k)} className={`h-2.5 w-2.5 rounded-full border border-brand ${k === i ? "bg-orange" : "bg-paper/90"}`} />
+              <button key={k} type="button" aria-label={`Photo ${k + 1} of ${images.length}`} aria-pressed={k === i} onClick={() => setI(k)} className={`h-2.5 w-2.5 rounded-full border border-brand ${k === i ? "bg-spark" : "bg-paper/90"}`} />
             ))}
           </div>
         )}
@@ -39,12 +39,12 @@ export function PropertyCard({ p, bookHref, onChoose, chosen, compact }: Props) 
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-2xl leading-none">
-            <Link to={`/stays/${p.slug}`} className="hover:text-orange-deep">
+            <Link to={`/stays/${p.slug}`} className="hover:text-spark-deep">
               {p.name}
             </Link>
           </h3>
           <p className="shrink-0 text-right leading-none whitespace-nowrap">
-            <span className="font-display text-2xl text-orange">{fmt(p.pricePerNightTzs)}</span>
+            <span className="font-display text-2xl text-spark">{fmt(p.pricePerNightTzs)}</span>
             <span className="block text-xs text-ink-soft">{t.common.perNight}</span>
           </p>
         </div>

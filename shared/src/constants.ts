@@ -1,10 +1,12 @@
 import type { PickupLocationCode } from "./types";
 
 export const COMPANY = {
-  name: "Bluesparks Holdings",
+  name: "Blue Spark Holdings",
+  legalName: "Blue Spark Holding Company Ltd.",
+  tagline: "Building a Brighter Tomorrow",
   carsBrand: "Johnson Rentals",
   /** Placeholder until the real BnB brand name is supplied. Admin can override via settings.bnbBrandName. */
-  staysBrand: "Bluesparks Stays",
+  staysBrand: "Blue Spark Stays",
   city: "Dar es Salaam",
 } as const;
 

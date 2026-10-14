@@ -223,7 +223,7 @@ export default function BookCar() {
       {preview && preview.totalTzs > 0 && (
         <p className="mt-3 text-right">
           <span className="text-xs text-ink-soft">Estimate</span>
-          <span className="block font-display text-3xl text-orange">{fmt(preview.totalTzs)}</span>
+          <span className="block font-display text-3xl text-spark">{fmt(preview.totalTzs)}</span>
           <span className="text-xs text-ink-soft">Final price confirmed at review</span>
         </p>
       )}
@@ -289,7 +289,7 @@ export default function BookCar() {
                 ]}
               />
             )}
-            <div className="border-l-4 border-orange bg-cream p-4 text-sm">
+            <div className="border-l-4 border-spark bg-cream p-4 text-sm">
               {f.rentalType === "self_drive" ? (
                 <>
                   <p className="font-bold text-brand">Self-drive requirements</p>

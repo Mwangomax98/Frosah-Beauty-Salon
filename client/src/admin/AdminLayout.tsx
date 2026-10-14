@@ -20,7 +20,7 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
-  const cls = ({ isActive }: { isActive: boolean }) => `block border-l-4 px-4 py-2 text-sm font-bold ${isActive ? "border-orange bg-brand-deep text-paper" : "border-transparent text-paper/75 hover:bg-brand-deep hover:text-paper"}`;
+  const cls = ({ isActive }: { isActive: boolean }) => `block border-l-4 px-4 py-2 text-sm font-bold ${isActive ? "border-spark bg-brand-deep text-paper" : "border-transparent text-paper/75 hover:bg-brand-deep hover:text-paper"}`;
   const menu = (
     <nav aria-label="Admin" className="flex-1 py-2">
       {NAV.map(([to, label, end]) => (
@@ -32,7 +32,7 @@ export default function AdminLayout() {
   );
   return (
     <div className="flex min-h-screen bg-paper text-ink">
-      <a href="#admin-main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-orange focus:px-3 focus:py-2 focus:text-white">
+      <a href="#admin-main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-spark focus:px-3 focus:py-2 focus:text-white">
         Skip to content
       </a>
       {/* Sidebar (desktop) */}
@@ -44,10 +44,10 @@ export default function AdminLayout() {
         <div className="border-t border-paper/15 px-4 py-3 text-xs text-paper/70">
           <p className="truncate">{user?.email}</p>
           <div className="mt-2 flex gap-3">
-            <NavLink to="/" className="hover:text-orange">
+            <NavLink to="/" className="hover:text-spark">
               View site
             </NavLink>
-            <button type="button" onClick={() => logout().then(() => nav("/admin/login"))} className="hover:text-orange">
+            <button type="button" onClick={() => logout().then(() => nav("/admin/login"))} className="hover:text-spark">
               Log out
             </button>
           </div>

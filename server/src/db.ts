@@ -299,7 +299,7 @@ export const DEFAULT_SETTINGS: Settings = {
   businessEmail: "info@example.com",
   businessPhone: "+255 700 000 000",
   businessAddress: "Masaki, Dar es Salaam",
-  bnbBrandName: "Bluesparks Stays",
+  bnbBrandName: "Blue Spark Stays",
 };
 
 const NUMERIC_SETTINGS: (keyof Settings)[] = ["usdRate", "driverFeeDarTzs", "driverFeeUpcountryTzs", "bundleDiscountPercent"];

@@ -129,7 +129,7 @@ async function seed(conn: mysql.Connection): Promise<void> {
         bedrooms: 2, beds: 2, bathrooms: 2, maxGuests: 4, amenities: ["wifi", "ac", "parking", "kitchen", "pool", "generator", "security", "tv", "sea_view", "balcony", "gym"],
         night: 350000, cleaning: 50000, minNights: 2, paymentMode: "deposit", depositPercent: 30,
         description: "Bright two-bedroom on the peninsula with the ocean straight ahead. Walk to Slipway, Coco Beach and the Masaki restaurants.",
-        checkin: "The building is on Chole Road, opposite the pharmacy. Tell the askari at the gate you are a Bluesparks guest; our caretaker Mama Neema will meet you with the keys. Check-in from 14:00.",
+        checkin: "The building is on Chole Road, opposite the pharmacy. Tell the askari at the gate you are a Blue Spark guest; our caretaker Mama Neema will meet you with the keys. Check-in from 14:00.",
       },
       {
         slug: "oyster-bay-garden-flat", name: "Oyster Bay Garden Flat", area: "Oyster Bay", address: "Toure Drive, Oyster Bay, Dar es Salaam", lat: -6.7625, lng: 39.2806,

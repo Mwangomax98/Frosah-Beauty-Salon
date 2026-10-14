@@ -90,7 +90,7 @@ export default function Calendar() {
                 {days.map((d) => {
                   const dow = new Date(`${d}T00:00:00Z`).getUTCDay();
                   return (
-                    <th key={d} className={`w-7 px-0 py-1 text-center font-normal ${dow === 0 || dow === 6 ? "bg-cream" : ""} ${d === today ? "font-bold text-orange" : "text-ink-soft"}`}>
+                    <th key={d} className={`w-7 px-0 py-1 text-center font-normal ${dow === 0 || dow === 6 ? "bg-cream" : ""} ${d === today ? "font-bold text-spark" : "text-ink-soft"}`}>
                       {Number(d.slice(-2))}
                     </th>
                   );
@@ -108,7 +108,7 @@ export default function Calendar() {
                     const bl = it.blocks.find((b) => d >= b.startDate && d <= b.endDate);
                     const inDrag = drag && drag.itemId === it.id && d >= (drag.start < drag.end ? drag.start : drag.end) && d <= (drag.start < drag.end ? drag.end : drag.start);
                     let cls = "h-8 w-7 border-l border-line/60 p-0 align-middle";
-                    if (inDrag) cls += " bg-orange/40";
+                    if (inDrag) cls += " bg-spark/40";
                     return (
                       <td
                         key={d}
@@ -125,7 +125,7 @@ export default function Calendar() {
                         }}
                       >
                         {bk && (
-                          <Link to={`/admin/bookings/${bk.id}`} title={`${bk.reference} · ${bk.customer.fullName} · ${bk.status}`} className={`block h-6 ${d === bk.startDate ? "ml-1 rounded-l-sm" : ""} ${d === bk.endDate ? "mr-1 rounded-r-sm" : ""} ${bk.status === "confirmed" ? "bg-brand" : bk.status === "completed" ? "bg-ink-soft" : "bg-orange"}`}>
+                          <Link to={`/admin/bookings/${bk.id}`} title={`${bk.reference} · ${bk.customer.fullName} · ${bk.status}`} className={`block h-6 ${d === bk.startDate ? "ml-1 rounded-l-sm" : ""} ${d === bk.endDate ? "mr-1 rounded-r-sm" : ""} ${bk.status === "confirmed" ? "bg-brand" : bk.status === "completed" ? "bg-ink-soft" : "bg-spark"}`}>
                           <span className="sr-only">{bk.reference}</span>
                         </Link>
                         )}
@@ -156,7 +156,7 @@ export default function Calendar() {
       )}
       <p className="mt-2 flex flex-wrap gap-4 text-xs text-ink-soft">
         <span className="inline-flex items-center gap-1">
-          <i className="inline-block h-3 w-5 bg-orange" /> Pending
+          <i className="inline-block h-3 w-5 bg-spark" /> Pending
         </span>
         <span className="inline-flex items-center gap-1">
           <i className="inline-block h-3 w-5 bg-brand" /> Confirmed

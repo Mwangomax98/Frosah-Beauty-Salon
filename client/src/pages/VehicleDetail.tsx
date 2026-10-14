@@ -86,7 +86,7 @@ export default function VehicleDetail() {
         <aside className="lg:col-span-5">
           <div className="sticky top-24 border-2 border-brand bg-white p-5 shadow-hard">
             <p className="eyebrow">Per day</p>
-            <p className="font-display text-5xl text-orange">{fmt(v.pricePerDayTzs)}</p>
+            <p className="font-display text-5xl text-spark">{fmt(v.pricePerDayTzs)}</p>
             <p className="text-sm text-ink-soft">{fmtBoth(v.pricePerDayTzs)}</p>
             <dl className="mt-4 divide-y divide-line border-y border-line text-sm">
               {v.pricePerWeekTzs && (

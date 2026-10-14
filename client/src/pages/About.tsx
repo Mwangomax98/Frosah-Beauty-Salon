@@ -4,10 +4,11 @@ import { useSeo } from "@/lib/useSeo";
 import { useSettings } from "@/lib/queries";
 import { IMAGES } from "@/content/images";
 import { srcSet, img800 } from "@/lib/format";
+import { LogoFull } from "@/components/brand/Logo";
 import { KangaDivider } from "@/components/KangaDivider";
 
 export default function About() {
-  useSeo({ title: "About Bluesparks Holdings", description: "Who runs Johnson Rentals and our short-stay apartments in Dar es Salaam, why we do it, and what we promise every guest." });
+  useSeo({ title: "About Blue Spark Holdings", description: "Who runs Johnson Rentals and our short-stay apartments in Dar es Salaam, why we do it, and what we promise every guest." });
   const { data: s } = useSettings();
   const bnb = s?.bnbBrandName ?? COMPANY.staysBrand;
   return (
@@ -26,7 +27,8 @@ export default function About() {
         </div>
         <div className="relative lg:col-span-6">
           <img src={IMAGES.about1} srcSet={srcSet(IMAGES.about1)} sizes="(min-width:1024px) 50vw, 100vw" alt="Handing over the keys to a hire car in Dar es Salaam" width="1600" height="1000" loading="eager" decoding="async" className="aspect-[4/3] w-full border-2 border-brand object-cover" />
-          <img src={img800(IMAGES.about2)} alt="Coco Beach, Oyster Bay, at dusk" width="800" height="500" loading="lazy" decoding="async" className="absolute -bottom-8 -left-4 hidden w-1/2 border-2 border-brand object-cover shadow-hard-orange sm:block" />
+          <LogoFull className="absolute -top-8 -right-4 hidden w-1/3 bg-white p-3 border-2 border-brand shadow-hard sm:block" />
+          <img src={img800(IMAGES.about2)} alt="Coco Beach, Oyster Bay, at dusk" width="800" height="500" loading="lazy" decoding="async" className="absolute -bottom-8 -left-4 hidden w-1/2 border-2 border-brand object-cover shadow-hard-spark sm:block" />
         </div>
       </section>
 
@@ -59,7 +61,7 @@ export default function About() {
             ["Fix it, don't argue", "Something wrong? Say so. We would rather lose a day's rent than a guest."],
           ].map(([h, p], i) => (
             <li key={h} className="border-t-4 border-brand pt-4">
-              <span className="font-display text-6xl text-orange" aria-hidden="true">
+              <span className="font-display text-6xl text-spark" aria-hidden="true">
                 0{i + 1}
               </span>
               <h3 className="mt-1 text-xl">{h}</h3>

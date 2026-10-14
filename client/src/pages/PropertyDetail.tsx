@@ -61,7 +61,7 @@ export default function PropertyDetail() {
           <h2 className="mt-10 text-3xl">Amenities</h2>
           <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {p.amenities.map((a) => (
-              <li key={a} className="border-l-4 border-orange pl-3 text-sm">
+              <li key={a} className="border-l-4 border-spark pl-3 text-sm">
                 {AMENITY_LABELS[a] ?? a}
               </li>
             ))}
@@ -97,7 +97,7 @@ export default function PropertyDetail() {
         <aside className="lg:col-span-5">
           <div className="sticky top-24 border-2 border-brand bg-white p-5 shadow-hard">
             <p className="eyebrow">Per night</p>
-            <p className="font-display text-5xl text-orange">{fmt(p.pricePerNightTzs)}</p>
+            <p className="font-display text-5xl text-spark">{fmt(p.pricePerNightTzs)}</p>
             <p className="text-sm text-ink-soft">{fmtBoth(p.pricePerNightTzs)}</p>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <DateField label="Check-in" value={checkIn} onChange={(v) => { setCheckIn(v); if (checkOut <= v) setCheckOut(addDays(v, p.minNights)); }} />
@@ -120,7 +120,7 @@ export default function PropertyDetail() {
                 )}
                 <div className="flex justify-between py-2 text-base">
                   <dt className="font-bold">Estimate</dt>
-                  <dd className="font-display text-xl text-orange">{fmt(estimate)}</dd>
+                  <dd className="font-display text-xl text-spark">{fmt(estimate)}</dd>
                 </div>
               </dl>
             )}

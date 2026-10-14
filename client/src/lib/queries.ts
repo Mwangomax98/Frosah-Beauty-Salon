@@ -15,7 +15,7 @@ export const FALLBACK_SETTINGS: PublicSettings = {
   businessEmail: "hello@bluesparks.co.tz",
   businessPhone: "+255 700 000 000",
   businessAddress: "Masaki, Dar es Salaam",
-  bnbBrandName: "Bluesparks Stays",
+  bnbBrandName: "Blue Spark Stays",
 };
 
 export function useSettings() {

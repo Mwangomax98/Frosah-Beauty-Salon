@@ -36,10 +36,10 @@ export function buildPropertyFeed(
   const lines: string[] = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Bluesparks Holdings//Bluesparks Stays//EN",
+    "PRODID:-//Blue Spark Holdings//Blue Spark Stays//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    fold(`X-WR-CALNAME:${icsEscape(property.name)} (Bluesparks)`),
+    fold(`X-WR-CALNAME:${icsEscape(property.name)} (Blue Spark)`),
   ];
   for (const b of bookings) {
     lines.push(
@@ -127,7 +127,7 @@ export function parseIcsEvents(body: string): ImportedEvent[] {
 }
 
 async function fetchIcs(url: string): Promise<string> {
-  const res = await fetch(url, { headers: { "User-Agent": "Bluesparks-iCal-Sync/1.0", Accept: "text/calendar, */*" }, signal: AbortSignal.timeout(20000) });
+  const res = await fetch(url, { headers: { "User-Agent": "Blue Spark-iCal-Sync/1.0", Accept: "text/calendar, */*" }, signal: AbortSignal.timeout(20000) });
   if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`);
   return res.text();
 }

@@ -196,7 +196,7 @@ export default function BookStay() {
       {preview && preview.totalTzs > 0 && (
         <p className="mt-3 text-right">
           <span className="text-xs text-ink-soft">Estimate</span>
-          <span className="block font-display text-3xl text-orange">{fmt(preview.totalTzs)}</span>
+          <span className="block font-display text-3xl text-spark">{fmt(preview.totalTzs)}</span>
           <span className="text-xs text-ink-soft">Final price confirmed at review</span>
         </p>
       )}
@@ -324,7 +324,7 @@ export default function BookStay() {
             {serverQuote.data && <QuoteTable quote={serverQuote.data} depositLabel={payMode === "deposit" ? `Deposit now (${property.depositPercent}%)` : undefined} />}
             <PromoField value={f.promoCode} onChange={(v) => { patch({ promoCode: v }); setPromoError(undefined); }} onApply={() => { setPromoError(undefined); setPromoApplied(f.promoCode); }} applied={!!promoApplied && promoApplied === f.promoCode} error={promoError} />
             {payMode === "on_arrival" ? (
-              <p className="border-l-4 border-orange bg-cream p-4 text-sm">This place is paid on arrival: nothing to pay now. Cash, M-Pesa, Tigo Pesa, Airtel Money or Halopesa at check-in.</p>
+              <p className="border-l-4 border-spark bg-cream p-4 text-sm">This place is paid on arrival: nothing to pay now. Cash, M-Pesa, Tigo Pesa, Airtel Money or Halopesa at check-in.</p>
             ) : (
               <PaymentChoice value={f.paymentMethod} onChange={(v) => patch({ paymentMethod: v })} payNowLabel={payMode === "deposit" ? `Pay ${property.depositPercent}% deposit now` : "Pay in full now"} payLaterLabel="Reserve, pay on arrival" allowOnArrival={payMode !== "full_online"} />
             )}

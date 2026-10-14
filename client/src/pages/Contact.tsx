@@ -21,7 +21,7 @@ const schema = z.object({
 const MASAKI = { lat: -6.7556, lng: 39.2765 };
 
 export default function Contact() {
-  useSeo({ title: "Contact Bluesparks Holdings", description: "WhatsApp, call or email Bluesparks Holdings in Masaki, Dar es Salaam. Car hire and short stays." });
+  useSeo({ title: "Contact Blue Spark Holdings", description: "WhatsApp, call or email Blue Spark Holdings in Masaki, Dar es Salaam. Car hire and short stays." });
   const { t } = useT();
   const { data: s } = useSettings();
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
@@ -47,7 +47,7 @@ export default function Contact() {
           <h1 className="mt-2 text-6xl sm:text-7xl">Say hello.</h1>
           <p className="mt-4 text-ink-soft">Fastest is WhatsApp. We answer 07:00–22:00, and for arrivals at odd hours we answer anyway.</p>
           <div className="mt-6 space-y-3">
-            <a href={waLink(s?.businessWhatsapp ?? "", "Habari Bluesparks!")} target="_blank" rel="noopener" className="btn-primary w-full text-lg sm:w-auto">
+            <a href={waLink(s?.businessWhatsapp ?? "", "Habari Blue Spark!")} target="_blank" rel="noopener" className="btn-primary w-full text-lg sm:w-auto">
               {t.common.whatsapp}
             </a>
             <dl className="divide-y divide-line border-y border-line text-sm">

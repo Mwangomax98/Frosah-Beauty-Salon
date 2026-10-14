@@ -48,7 +48,7 @@ export default function BookingDetail() {
         title={b.reference}
         actions={
           <>
-            <a href={waLink(b.customer.phone, `Habari ${b.customer.fullName.split(" ")[0]}, this is Bluesparks about booking ${b.reference}.`)} target="_blank" rel="noopener" className="btn-ghost btn-sm">
+            <a href={waLink(b.customer.phone, `Habari ${b.customer.fullName.split(" ")[0]}, this is Blue Spark about booking ${b.reference}.`)} target="_blank" rel="noopener" className="btn-ghost btn-sm">
               WhatsApp customer
             </a>
             {b.status === "pending" && <ConfirmButton label="Confirm booking" variant="primary" title="Confirm this booking?" body="The customer gets a confirmation email and WhatsApp." onConfirm={() => save.mutate({ status: "confirmed" })} />}
