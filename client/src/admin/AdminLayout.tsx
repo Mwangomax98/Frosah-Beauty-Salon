@@ -13,6 +13,7 @@ const NAV = [
   ["/admin/extras", "Extras"],
   ["/admin/zones", "Delivery zones"],
   ["/admin/promos", "Promo codes"],
+  ["/admin/photos", "Site photos"],
   ["/admin/settings", "Settings"],
 ] as const;
 

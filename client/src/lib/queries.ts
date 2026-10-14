@@ -1,7 +1,8 @@
 // React Query hooks for the public API.
 import { useQuery } from "@tanstack/react-query";
 import type { DeliveryZone, Extra, Property, Settings, Vehicle } from "@bluesparks/shared";
-import { api } from "./api";
+import { api, apiUrl } from "./api";
+import { IMAGES } from "@/content/images";
 
 export type PublicSettings = Omit<Settings, "vendorEmail">;
 export type Blocked = { start: string; end: string };
@@ -16,6 +17,7 @@ export const FALLBACK_SETTINGS: PublicSettings = {
   businessPhone: "+255 700 000 000",
   businessAddress: "Masaki, Dar es Salaam",
   bnbBrandName: "Blue Spark Stays",
+  siteImages: {},
 };
 
 export function useSettings() {
@@ -25,6 +27,16 @@ export function useSettings() {
     staleTime: 5 * 60_000,
     placeholderData: FALLBACK_SETTINGS,
   });
+}
+
+/** Bundled placeholder photos, overridden by anything the owner uploaded in Admin → Site photos. */
+export function useSiteImages() {
+  const { data } = useSettings();
+  const uploaded = data?.siteImages ?? {};
+  return {
+    ...IMAGES,
+    ...Object.fromEntries(Object.entries(uploaded).filter(([, v]) => !!v).map(([k, v]) => [k, apiUrl(v as string)])),
+  } as typeof IMAGES;
 }
 
 export function useVehicles(params?: { from?: string; to?: string; pickupTime?: string; returnTime?: string }) {

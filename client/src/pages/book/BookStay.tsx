@@ -1,3 +1,4 @@
+import { useSiteImages } from "@/lib/queries";
 import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -13,7 +14,6 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { Skeleton, ErrorState, EmptyState } from "@/components/States";
 import { useToast } from "@/components/ui/Toast";
 import { fmtDate, tomorrow, img800 } from "@/lib/format";
-import { IMAGES } from "@/content/images";
 import { BookingShell, StepNav, SummaryBox, CustomerFields, DocumentUpload, QuoteTable, PaymentChoice, PromoField, TermsLine, FormAlert, useStep, type UploadedDoc, type CustomerForm } from "./shared";
 import { stayDatesSchema, stayDetailsSchema, flatten, fromServer, type FieldErrors } from "./schemas";
 
@@ -38,6 +38,7 @@ interface State {
 }
 
 export default function BookStay() {
+  const IMAGES = useSiteImages();
   const { data: settings } = useSettings();
   const s = settings ?? FALLBACK_SETTINGS;
   useSeo({ title: `Book a stay — ${s.bnbBrandName}`, noindex: true });

@@ -1,13 +1,14 @@
+import { useSiteImages } from "@/lib/queries";
 import { Link } from "react-router";
 import { COMPANY } from "@bluesparks/shared";
 import { useSeo } from "@/lib/useSeo";
 import { useSettings } from "@/lib/queries";
-import { IMAGES } from "@/content/images";
 import { srcSet, img800 } from "@/lib/format";
 import { LogoFull } from "@/components/brand/Logo";
 import { KangaDivider } from "@/components/KangaDivider";
 
 export default function About() {
+  const IMAGES = useSiteImages();
   useSeo({ title: "About Blue Spark Holdings", description: "Who runs Johnson Rentals and our short-stay apartments in Dar es Salaam, why we do it, and what we promise every guest." });
   const { data: s } = useSettings();
   const bnb = s?.bnbBrandName ?? COMPANY.staysBrand;

@@ -49,7 +49,7 @@ Useful commands: `npm run typecheck` (all workspaces), `npm test` (server tests 
 |---|---|
 | Logo colours — already sampled from the supplied logo (navy `#081132`, royal blue `#015CD9`, deep blue `#0133A5`, sky `#02A2FB`) | `client/src/index.css` |
 | Logo files — already cut from the supplied JPG; replace with vector exports when available | `client/public/brand/` |
-| Photos (free Unsplash placeholders are bundled) | `client/public/images/placeholders/` + `client/src/content/images.ts` |
+| Photos — hero, home and About pictures | Admin → Site photos (upload); car and apartment photos under Admin → Vehicles / Properties |
 | BnB brand name | Admin → Settings → "BnB brand name" |
 | Business WhatsApp number, vendor email, phone, address | Admin → Settings |
 | Fleet, properties, prices, extras, delivery zones, promo codes | Admin dashboard |

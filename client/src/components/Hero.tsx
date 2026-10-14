@@ -1,5 +1,5 @@
+import { useSiteImages } from "@/lib/queries";
 import { useRef } from "react";
-import { IMAGES } from "@/content/images";
 import { useT } from "@/i18n";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { BookingCard } from "./BookingCard";
@@ -13,6 +13,7 @@ import { img800 } from "@/lib/format";
  * All motion is driven by a single CSS variable `--p` (0..1); reduced motion pins it at 1.
  */
 export function Hero({ stayName, stayHref }: { stayName?: string; stayHref?: string }) {
+  const IMAGES = useSiteImages();
   const { t } = useT();
   const stageRef = useRef<HTMLDivElement>(null);
   const mobileRouteRef = useRef<HTMLDivElement>(null);

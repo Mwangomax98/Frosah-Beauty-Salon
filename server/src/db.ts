@@ -300,6 +300,7 @@ export const DEFAULT_SETTINGS: Settings = {
   businessPhone: "+255 700 000 000",
   businessAddress: "Masaki, Dar es Salaam",
   bnbBrandName: "Blue Spark Stays",
+  siteImages: {},
 };
 
 const NUMERIC_SETTINGS: (keyof Settings)[] = ["usdRate", "driverFeeDarTzs", "driverFeeUpcountryTzs", "bundleDiscountPercent"];
@@ -309,6 +310,15 @@ export function rowsToSettings(rows: { key: string; value: string }[]): Settings
   const out: Record<string, unknown> = { ...DEFAULT_SETTINGS };
   for (const { key, value } of rows) {
     if (!(key in DEFAULT_SETTINGS)) continue;
+    if (key === "siteImages") {
+      try {
+        const parsed: unknown = JSON.parse(value);
+        out[key] = parsed && typeof parsed === "object" ? parsed : {};
+      } catch {
+        out[key] = {};
+      }
+      continue;
+    }
     out[key] = (NUMERIC_SETTINGS as string[]).includes(key) ? Number(value) : value;
   }
   return out as unknown as Settings;

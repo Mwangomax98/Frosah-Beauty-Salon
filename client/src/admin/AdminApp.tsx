@@ -11,6 +11,7 @@ import Properties from "./pages/Properties";
 import Pricing from "./pages/Pricing";
 import { Extras, Zones, Promos } from "./pages/SimpleCrud";
 import Settings from "./pages/Settings";
+import Photos from "./pages/Photos";
 import { useSeo } from "@/lib/useSeo";
 
 export default function AdminApp() {
@@ -36,6 +37,7 @@ export default function AdminApp() {
           <Route path="extras" element={<Extras />} />
           <Route path="zones" element={<Zones />} />
           <Route path="promos" element={<Promos />} />
+          <Route path="photos" element={<Photos />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<p className="text-ink-soft">Not found.</p>} />
         </Route>

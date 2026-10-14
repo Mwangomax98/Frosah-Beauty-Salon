@@ -1,3 +1,4 @@
+import { useSiteImages } from "@/lib/queries";
 import { Link } from "react-router";
 import { COMPANY } from "@bluesparks/shared";
 import { Hero } from "@/components/Hero";
@@ -7,11 +8,11 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { Skeleton, ErrorState, EmptyState } from "@/components/States";
 import { useProperties, useSettings, useVehicles } from "@/lib/queries";
 import { useSeo } from "@/lib/useSeo";
-import { IMAGES } from "@/content/images";
 import { AREAS, FAQ } from "@/content/site";
 import { img800, srcSet } from "@/lib/format";
 
 export default function Home() {
+  const IMAGES = useSiteImages();
   useSeo({
     title: "Blue Spark Holdings — Car hire & short stays in Dar es Salaam",
     description: "Johnson Rentals car hire (self-drive or with driver) and short-stay apartments in Dar es Salaam. Airport pickup at JNIA, stays in Masaki, Oyster Bay, Mikocheni and Kigamboni.",

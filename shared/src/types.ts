@@ -127,6 +127,11 @@ export interface BlockedDate {
   source: "manual" | "ical";
 }
 
+/** Photos the owner can replace from Admin → Site photos. Missing keys fall back to the bundled placeholders. */
+export const SITE_IMAGE_KEYS = ["heroDar", "heroCar", "heroStay", "airport", "street", "about1", "about2"] as const;
+export type SiteImageKey = (typeof SITE_IMAGE_KEYS)[number];
+export type SiteImages = Partial<Record<SiteImageKey, string>>;
+
 /** Site-wide settings editable from the admin dashboard. */
 export interface Settings {
   usdRate: number; // TZS per 1 USD
@@ -139,6 +144,7 @@ export interface Settings {
   businessPhone: string;
   businessAddress: string;
   bnbBrandName: string;
+  siteImages: SiteImages;
 }
 
 export interface LineItem {

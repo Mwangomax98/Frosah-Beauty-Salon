@@ -1,5 +1,5 @@
+import { useSiteImages } from "@/lib/queries";
 import { Link } from "react-router";
-import { IMAGES } from "@/content/images";
 import { img800 } from "@/lib/format";
 
 /**
@@ -19,6 +19,7 @@ const LEN = 1400;
 const PATH = `M${STOPS[0]!.x} ${STOPS[0]!.y} C 160 110, 220 55, ${STOPS[1]!.x} ${STOPS[1]!.y} S 500 95, ${STOPS[2]!.x} ${STOPS[2]!.y} S 700 50, ${STOPS[3]!.x} ${STOPS[3]!.y} S 920 105, ${END.x} ${END.y}`;
 
 export function RouteMap({ className = "", stayName = "Masaki sea-view apartment", stayHref = "/stays", vertical = false }: { className?: string; stayName?: string; stayHref?: string; vertical?: boolean }) {
+  const IMAGES = useSiteImages();
   if (vertical) return <RouteMapVertical className={className} stayName={stayName} stayHref={stayHref} />;
   return (
     <div className={`relative ${className}`} aria-hidden="false">
@@ -82,6 +83,7 @@ const V_PATH = `M${V_STOPS[0]!.x} ${V_STOPS[0]!.y} ${V_STOPS.slice(1)
   .join(" ")} C 70 ${V_END.y - 70}, 10 ${V_END.y - 40}, ${V_END.x} ${V_END.y}`;
 
 function RouteMapVertical({ className, stayName, stayHref }: { className: string; stayName: string; stayHref: string }) {
+  const IMAGES = useSiteImages();
   const h = V_END.y + 40;
   return (
     <div className={`grid grid-cols-[120px_1fr] items-end gap-3 ${className}`}>
