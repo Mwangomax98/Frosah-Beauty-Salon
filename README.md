@@ -5,6 +5,8 @@ One site for two Dar es Salaam services:
 - **Johnson Rentals** — car hire, self-drive or with driver.
 - **Blue Spark Stays** (placeholder name until the BnB brand is supplied) — short-stay apartments and houses.
 
+Every car can be booked **Self Drive** or **With Driver**, each with its own price. Pages: home, car fleet, Self Drive, With Driver, Toyota Alphard, price list, short stays, customer reviews, contact (WhatsApp, phone, Instagram, Google Maps), terms. Every page has a WhatsApp booking button.
+
 One design system, two booking flows, one admin dashboard, vendor notifications by email + WhatsApp, iCal sync with Airbnb / Booking.com.
 
 ```
@@ -49,9 +51,12 @@ Useful commands: `npm run typecheck` (all workspaces), `npm test` (server tests 
 |---|---|
 | Logo colours — already sampled from the supplied logo (navy `#081132`, royal blue `#015CD9`, deep blue `#0133A5`, sky `#02A2FB`) | `client/src/index.css` |
 | Logo files — already cut from the supplied JPG; replace with vector exports when available | `client/public/brand/` |
-| Photos (free Unsplash placeholders are bundled) | `client/public/images/placeholders/` + `client/src/content/images.ts` |
+| Photos (free Unsplash placeholders are bundled) — **especially real Toyota Alphard photos** (it currently shows a placeholder) | Admin → Vehicles → edit → Images, or `client/public/images/placeholders/` |
+| Each car's two prices — **Self Drive** and **With Driver** (per day, optional week/month), plus model and year | Admin → Vehicles → edit |
+| Instagram link and Google Maps share link (Contact page + footer) | Admin → Settings |
+| Customer reviews — approve the ones customers send from the site, or add ones received on WhatsApp/Instagram/Google | Admin → Reviews |
 | BnB brand name | Admin → Settings → "BnB brand name" |
-| Business WhatsApp number, vendor email, phone, address | Admin → Settings |
+| Business WhatsApp (already set to **0625 102 051** → `255625102051`), vendor email, phone, address | Admin → Settings |
 | Fleet, properties, prices, extras, delivery zones, promo codes | Admin dashboard |
 | Real payment gateway | `server/.env` → `PAYMENT_GATEWAY=flutterwave` + keys (see `server/README.md`) |
 | WhatsApp Cloud API credentials (optional — click-to-chat links work without them) | `server/.env` |

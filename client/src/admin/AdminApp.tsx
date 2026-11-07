@@ -9,7 +9,7 @@ import Calendar from "./pages/Calendar";
 import Vehicles from "./pages/Vehicles";
 import Properties from "./pages/Properties";
 import Pricing from "./pages/Pricing";
-import { Extras, Zones, Promos } from "./pages/SimpleCrud";
+import { Extras, Zones, Promos, Reviews } from "./pages/SimpleCrud";
 import Settings from "./pages/Settings";
 import { useSeo } from "@/lib/useSeo";
 
@@ -36,6 +36,7 @@ export default function AdminApp() {
           <Route path="extras" element={<Extras />} />
           <Route path="zones" element={<Zones />} />
           <Route path="promos" element={<Promos />} />
+          <Route path="reviews" element={<Reviews />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<p className="text-ink-soft">Not found.</p>} />
         </Route>

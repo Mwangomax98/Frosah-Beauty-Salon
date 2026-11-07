@@ -77,7 +77,23 @@ server/
      }
    }
    ```
-   Serve the built client (`client/dist`) from another server block for `www.yourdomain.co.tz` with `try_files $uri /index.html;`.
+   Serve the built client (`client/dist`) from another server block. This one also adds the security headers and caching that keep the site fast and safe:
+   ```nginx
+   server {
+     server_name www.yourdomain.co.tz yourdomain.co.tz;
+     root /var/www/bluesparks/client/dist;
+     gzip on;
+     gzip_types text/css application/javascript application/json image/svg+xml;
+     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+     add_header X-Content-Type-Options "nosniff" always;
+     add_header X-Frame-Options "DENY" always;
+     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+     add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+     location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; }
+     location /images/ { expires 7d; }
+     location / { try_files $uri /index.html; }
+   }
+   ```
 6. HTTPS with Let's Encrypt: `sudo apt install certbot python3-certbot-nginx && sudo certbot --nginx -d api.yourdomain.co.tz -d www.yourdomain.co.tz`. Certbot renews automatically.
 7. Back up the database nightly: `mysqldump bluesparks | gzip > /backups/bluesparks-$(date +%F).sql.gz` in a cron job, and back up `server/uploads/`.
 

@@ -7,6 +7,8 @@ import { api, errorMessage } from "@/lib/api";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { waLink } from "@/lib/format";
+import { localPhone } from "@/lib/whatsapp";
+import { InstagramIcon } from "@/components/Footer";
 import { flatten, type FieldErrors } from "./book/schemas";
 import { useT } from "@/i18n";
 
@@ -17,11 +19,8 @@ const schema = z.object({
   message: z.string().trim().min(10, "Tell us a little more").max(2000),
 });
 
-// Masaki peninsula, Dar es Salaam
-const MASAKI = { lat: -6.7556, lng: 39.2765 };
-
 export default function Contact() {
-  useSeo({ title: "Contact Blue Spark Holdings", description: "WhatsApp, call or email Blue Spark Holdings in Masaki, Dar es Salaam. Car hire and short stays." });
+  useSeo({ title: "Contact Blue Spark", description: "WhatsApp or call Blue Spark on 0625 102 051, follow us on Instagram, or find our office on Google Maps in Masaki, Dar es Salaam. Car hire and short stays." });
   const { t } = useT();
   const { data: s } = useSettings();
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
@@ -37,7 +36,10 @@ export default function Contact() {
     setErrors({});
     m.mutate(r.data);
   };
-  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${MASAKI.lng - 0.02},${MASAKI.lat - 0.014},${MASAKI.lng + 0.02},${MASAKI.lat + 0.014}&layer=mapnik&marker=${MASAKI.lat},${MASAKI.lng}`;
+  // Google Maps embed by address: no API key needed. The share link (Admin → Settings) opens the exact pin.
+  const address = s?.businessAddress || "Masaki, Dar es Salaam";
+  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(`Blue Spark, ${address}, Tanzania`)}&output=embed`;
+  const mapLink = s?.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address}, Tanzania`)}`;
 
   return (
     <section className="container-x py-14 lg:py-20">
@@ -47,9 +49,16 @@ export default function Contact() {
           <h1 className="mt-2 text-6xl sm:text-7xl">Say hello.</h1>
           <p className="mt-4 text-ink-soft">Fastest is WhatsApp. We answer 07:00–22:00, and for arrivals at odd hours we answer anyway.</p>
           <div className="mt-6 space-y-3">
-            <a href={waLink(s?.businessWhatsapp ?? "", "Habari Blue Spark!")} target="_blank" rel="noopener" className="btn-primary w-full text-lg sm:w-auto">
-              {t.common.whatsapp}
-            </a>
+            <div className="flex flex-wrap gap-3">
+              <a href={waLink(s?.businessWhatsapp ?? "", "Habari Blue Spark! I would like to make a booking.")} target="_blank" rel="noopener" className="btn-primary text-lg">
+                {t.common.whatsapp} · {localPhone(s?.businessWhatsapp ?? "")}
+              </a>
+              {s?.instagramUrl && (
+                <a href={s.instagramUrl} target="_blank" rel="noopener" className="btn-ghost text-lg">
+                  <InstagramIcon size={20} /> <span className="ml-2">Instagram</span>
+                </a>
+              )}
+            </div>
             <dl className="divide-y divide-line border-y border-line text-sm">
               <div className="flex justify-between py-3">
                 <dt className="text-ink-soft">Phone</dt>
@@ -67,13 +76,34 @@ export default function Contact() {
                   </a>
                 </dd>
               </div>
+              <div className="flex justify-between py-3">
+                <dt className="text-ink-soft">WhatsApp</dt>
+                <dd>
+                  <a href={waLink(s?.businessWhatsapp ?? "")} target="_blank" rel="noopener" className="font-bold text-brand">
+                    {localPhone(s?.businessWhatsapp ?? "")}
+                  </a>
+                </dd>
+              </div>
+              {s?.instagramUrl && (
+                <div className="flex justify-between gap-6 py-3">
+                  <dt className="text-ink-soft">Instagram</dt>
+                  <dd className="truncate">
+                    <a href={s.instagramUrl} target="_blank" rel="noopener" className="font-bold text-brand">
+                      {s.instagramUrl.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                    </a>
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between gap-6 py-3">
                 <dt className="text-ink-soft">Office</dt>
                 <dd className="text-right font-bold text-brand">{s?.businessAddress}</dd>
               </div>
             </dl>
           </div>
-          <iframe title="Map of our office in Masaki" src={mapSrc} className="mt-6 aspect-[4/3] w-full border-2 border-brand" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+          <iframe title="Google Map of the Blue Spark office" src={mapSrc} className="mt-6 aspect-[4/3] w-full border-2 border-brand" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+          <a href={mapLink} target="_blank" rel="noopener" className="link-underline mt-2 inline-block text-sm font-bold text-brand">
+            Open in Google Maps →
+          </a>
         </div>
         <div className="lg:col-span-6 lg:col-start-7">
           {sent ? (

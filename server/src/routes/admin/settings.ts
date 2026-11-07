@@ -18,6 +18,8 @@ export const settingsSchema = z.object({
   businessPhone: z.string().trim().max(40),
   businessAddress: z.string().trim().max(255),
   bnbBrandName: z.string().trim().min(1).max(80),
+  instagramUrl: z.union([z.literal(""), z.string().trim().url("Paste the full link, e.g. https://instagram.com/yourpage").max(255)]).default(""),
+  googleMapsUrl: z.union([z.literal(""), z.string().trim().url("Paste the full Google Maps share link").max(500)]).default(""),
 });
 
 adminSettingsRouter.get("/settings", async (_req, res) => {

@@ -45,15 +45,17 @@ export default function Settings() {
       {f && (
         <form onSubmit={submit} className="grid max-w-3xl gap-4 border-2 border-line bg-white p-5 sm:grid-cols-2">
           <Input label="BnB brand name" required value={f.bnbBrandName} onChange={(e) => set("bnbBrandName", e.target.value)} hint="Shown everywhere the stays brand appears." error={errors.bnbBrandName} className="sm:col-span-2" />
-          <Input label="Business WhatsApp (digits only, e.g. 2557XXXXXXXX)" required inputMode="numeric" value={f.businessWhatsapp} onChange={(e) => set("businessWhatsapp", e.target.value.replace(/[^0-9]/g, ""))} error={errors.businessWhatsapp} />
+          <Input label="Business WhatsApp (digits only, e.g. 255625102051)" hint="Every “Book on WhatsApp” button opens this number." required inputMode="numeric" value={f.businessWhatsapp} onChange={(e) => set("businessWhatsapp", e.target.value.replace(/[^0-9]/g, ""))} error={errors.businessWhatsapp} />
           <Input label="Business phone (shown on site)" required value={f.businessPhone} onChange={(e) => set("businessPhone", e.target.value)} error={errors.businessPhone} />
           <Input label="Vendor email (receives booking notifications)" type="email" required value={f.vendorEmail} onChange={(e) => set("vendorEmail", e.target.value)} error={errors.vendorEmail} />
           <Input label="Public email (shown on site)" type="email" required value={f.businessEmail} onChange={(e) => set("businessEmail", e.target.value)} error={errors.businessEmail} />
-          <Input label="Address" required value={f.businessAddress} onChange={(e) => set("businessAddress", e.target.value)} error={errors.businessAddress} className="sm:col-span-2" />
+          <Input label="Address" required value={f.businessAddress} onChange={(e) => set("businessAddress", e.target.value)} error={errors.businessAddress} className="sm:col-span-2" hint="Also used for the Google Map on the Contact page." />
+          <Input label="Instagram link" type="url" value={f.instagramUrl ?? ""} onChange={(e) => set("instagramUrl", e.target.value)} error={errors.instagramUrl} placeholder="https://instagram.com/yourpage" hint="Leave blank to hide." />
+          <Input label="Google Maps link" type="url" value={f.googleMapsUrl ?? ""} onChange={(e) => set("googleMapsUrl", e.target.value)} error={errors.googleMapsUrl} placeholder="https://maps.app.goo.gl/…" hint="Share link for the office pin. Blank = search by address." />
           <Input label="USD rate (TZS per $1)" type="number" min={1} value={numInput(f.usdRate)} onChange={(e) => set("usdRate", toNum(e.target.value))} error={errors.usdRate} />
           <Input label="Bundle discount (%)" type="number" min={0} max={100} value={numInput(f.bundleDiscountPercent)} onChange={(e) => set("bundleDiscountPercent", toNum(e.target.value))} error={errors.bundleDiscountPercent} />
-          <Input label="Driver fee, Dar (TZS/day)" type="number" min={0} value={numInput(f.driverFeeDarTzs)} onChange={(e) => set("driverFeeDarTzs", toNum(e.target.value))} />
-          <Input label="Driver fee, upcountry (TZS/day)" type="number" min={0} value={numInput(f.driverFeeUpcountryTzs)} onChange={(e) => set("driverFeeUpcountryTzs", toNum(e.target.value))} />
+          <Input label="Default driver fee (TZS/day)" hint="Only used for cars without their own with-driver price." type="number" min={0} value={numInput(f.driverFeeDarTzs)} onChange={(e) => set("driverFeeDarTzs", toNum(e.target.value))} />
+          <Input label="Upcountry allowance (TZS/day)" hint="Added on top of the with-driver price for upcountry trips." type="number" min={0} value={numInput(f.driverFeeUpcountryTzs)} onChange={(e) => set("driverFeeUpcountryTzs", toNum(e.target.value))} />
           <div className="sm:col-span-2">
             <Button type="submit" loading={save.isPending}>
               Save settings

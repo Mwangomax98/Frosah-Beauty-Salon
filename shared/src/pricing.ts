@@ -6,6 +6,7 @@ import type {
   Property,
   PromoCode,
   Quote,
+  RentalType,
   SeasonalRate,
   Settings,
   StayBookingInput,
@@ -91,6 +92,26 @@ export function rentalDays(pickupDate: string, pickupTime: string, returnDate: s
   return Math.max(1, Math.ceil((hours - 1) / 24));
 }
 
+export interface VehicleRates {
+  day: number;
+  week: number | null;
+  month: number | null;
+  /** Per-day difference between this rental type and self-drive (0 for self-drive). */
+  premium: number;
+}
+
+/** Day / week / month rates for one rental type. Every car can be booked both ways, each at its own price. */
+export function vehicleRates(v: Vehicle, rentalType: RentalType, settings: Pick<Settings, "driverFeeDarTzs">): VehicleRates {
+  if (rentalType === "self_drive") return { day: v.pricePerDayTzs, week: v.pricePerWeekTzs, month: v.pricePerMonthTzs, premium: 0 };
+  const day = v.priceWithDriverPerDayTzs ?? v.pricePerDayTzs + settings.driverFeeDarTzs;
+  const premium = day - v.pricePerDayTzs;
+  const week = v.priceWithDriverPerWeekTzs ?? (v.pricePerWeekTzs !== null ? v.pricePerWeekTzs + premium * 7 : null);
+  const month = v.priceWithDriverPerMonthTzs ?? (v.pricePerMonthTzs !== null ? v.pricePerMonthTzs + premium * 30 : null);
+  return { day, week, month, premium };
+}
+
+export const RENTAL_TYPE_LABEL: Record<RentalType, string> = { self_drive: "Self drive", with_driver: "With driver" };
+
 export function quoteCar(input: Pick<CarBookingInput, "pickupDate" | "pickupTime" | "returnDate" | "returnTime" | "rentalType" | "driverScope" | "extras" | "pickupLocation" | "dropoffLocation" | "deliveryZoneId" | "promoCode">, ctx: CarQuoteContext): Quote {
   const items: LineItem[] = [];
   const notes: string[] = [];
@@ -99,23 +120,24 @@ export function quoteCar(input: Pick<CarBookingInput, "pickupDate" | "pickupTime
     return { items, subtotalTzs: 0, discountTzs: 0, totalTzs: 0, depositTzs: 0, days: 0, notes: ["Return must be after pickup"] };
   }
   const v = ctx.vehicle;
+  const rates = vehicleRates(v, input.rentalType, ctx.settings);
   const dates = eachDate(input.pickupDate, addDays(input.pickupDate, days - 1));
-  const dailyTotal = dates.reduce((s, d) => s + seasonalOrBase(d, v.pricePerDayTzs, ctx.seasonalRates), 0);
+  // Seasonal rates are set on the self-drive price; the with-driver premium is added on top of each day.
+  const dailyTotal = dates.reduce((s, d) => s + seasonalOrBase(d, v.pricePerDayTzs, ctx.seasonalRates) + rates.premium, 0);
   const avg = dailyTotal / days;
-  const { total: vehicleTotal, note } = bestPeriodTotal(days, dailyTotal, avg, v.pricePerWeekTzs, v.pricePerMonthTzs);
+  const { total: vehicleTotal, note } = bestPeriodTotal(days, dailyTotal, avg, rates.week, rates.month);
   if (note) notes.push(note);
-  items.push({ code: "vehicle", label: `${v.name} × ${days} day${days > 1 ? "s" : ""}`, qty: days, unitTzs: r(vehicleTotal / days), totalTzs: vehicleTotal });
+  items.push({
+    code: "vehicle",
+    label: `${v.name} (${RENTAL_TYPE_LABEL[input.rentalType]}) × ${days} day${days > 1 ? "s" : ""}`,
+    qty: days,
+    unitTzs: r(vehicleTotal / days),
+    totalTzs: vehicleTotal,
+  });
 
-  if (input.rentalType === "with_driver") {
-    const scope = input.driverScope ?? "dar";
-    const fee = scope === "upcountry" ? ctx.settings.driverFeeUpcountryTzs : ctx.settings.driverFeeDarTzs;
-    items.push({
-      code: "driver",
-      label: scope === "upcountry" ? "Driver (upcountry) × days" : "Driver (within Dar) × days",
-      qty: days,
-      unitTzs: fee,
-      totalTzs: r(fee * days),
-    });
+  if (input.rentalType === "with_driver" && input.driverScope === "upcountry" && ctx.settings.driverFeeUpcountryTzs > 0) {
+    const fee = ctx.settings.driverFeeUpcountryTzs;
+    items.push({ code: "driver_upcountry", label: "Upcountry allowance for the driver × days", qty: days, unitTzs: fee, totalTzs: r(fee * days) });
   }
 
   const zoneLegs = [input.pickupLocation, input.dropoffLocation].filter((l) => l === "custom").length;

@@ -6,6 +6,10 @@ import { PageLoading } from "./components/States";
 
 // Everything except the home route is code-split so the first paint stays light.
 const Cars = lazy(() => import("./pages/Cars"));
+const RentalType = lazy(() => import("./pages/RentalType"));
+const Prices = lazy(() => import("./pages/Prices"));
+const ToyotaAlphard = lazy(() => import("./pages/ToyotaAlphard"));
+const Reviews = lazy(() => import("./pages/Reviews"));
 const VehicleDetail = lazy(() => import("./pages/VehicleDetail"));
 const Stays = lazy(() => import("./pages/Stays"));
 const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
@@ -39,6 +43,11 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="cars" element={<Cars />} />
             <Route path="cars/:slug" element={<VehicleDetail />} />
+            <Route path="self-drive" element={<RentalType key="self_drive" type="self_drive" />} />
+            <Route path="with-driver" element={<RentalType key="with_driver" type="with_driver" />} />
+            <Route path="prices" element={<Prices />} />
+            <Route path="toyota-alphard" element={<ToyotaAlphard />} />
+            <Route path="reviews" element={<Reviews />} />
             <Route path="stays" element={<Stays />} />
             <Route path="stays/:slug" element={<PropertyDetail />} />
             <Route path="book/car" element={<BookCar />} />

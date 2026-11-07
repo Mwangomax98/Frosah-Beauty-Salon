@@ -12,13 +12,20 @@ export default function Terms() {
     <article className="container-x max-w-3xl py-14 lg:py-20">
       <p className="eyebrow">Legal</p>
       <h1 className="mt-2 text-5xl sm:text-6xl">Terms &amp; conditions</h1>
-      <p className="mt-3 text-sm text-ink-soft">Last updated 1 October 2026. {lang === "sw" && "Ukurasa huu unapatikana kwa Kiingereza tu kwa sasa; tuulize kwa WhatsApp ukihitaji maelezo kwa Kiswahili."}</p>
+      <p className="mt-3 text-sm text-ink-soft">Last updated 7 November 2026. {lang === "sw" && "Ukurasa huu unapatikana kwa Kiingereza tu kwa sasa; tuulize kwa WhatsApp ukihitaji maelezo kwa Kiswahili."}</p>
       <div className="prose-site mt-8">
         <p>
           These terms apply to every booking made with {COMPANY.name} ("we", "us"), trading as {COMPANY.carsBrand} for vehicle hire and {bnb} for short-stay accommodation. By ticking the box on the booking form you agree to them. If anything here is unclear, ask before you book; we would rather explain than argue later.
         </p>
 
         <h2>Part A — Vehicle hire ({COMPANY.carsBrand})</h2>
+        <h3>Booking options and prices</h3>
+        <ul>
+          <li>Every vehicle can be booked in one of two ways, each with its own price shown on the vehicle page and the price list: <b>Self Drive</b> (the hirer drives) and <b>With Driver</b> (the vehicle comes with one of our drivers).</li>
+          <li>The price that applies is the one for the option chosen at booking. Changing option after booking is possible if a driver is free, and the price is recalculated at the rate for the new option.</li>
+          <li>Self Drive requires a valid licence, ID and a refundable deposit (sections 1 and 5). With Driver needs no licence or deposit; section 7 applies.</li>
+          <li>Bookings made on WhatsApp ({s?.businessWhatsapp ? `+${s.businessWhatsapp}` : "our business number"}) are confirmed only when we send the booking reference and price in writing. The same terms apply as for bookings made on this website.</li>
+        </ul>
         <h3>1. Who may drive</h3>
         <ul>
           <li>Self-drive hirers must be 23 or older and hold a full driving licence for at least two years. Licences in English, or accompanied by an English translation or an International Driving Permit, are accepted for 90 days from your entry into Tanzania. Tanzanian and East African Community licences are accepted without limit.</li>
@@ -49,7 +56,7 @@ export default function Terms() {
         <h3>6. Breakdowns</h3>
         <p>Call us first. We arrange recovery or repair, and a replacement vehicle where the fault is not the hirer's. Repairs authorised by us are refunded against receipts. Repairs made without speaking to us are at the hirer's cost.</p>
         <h3>7. Chauffeur-driven hire</h3>
-        <p>Our drivers work up to 12 hours a day with reasonable breaks. For upcountry hire the daily driver fee includes the driver's meals and lodging. The driver may decline a route they consider unsafe, and their decision on the state of a road is final.</p>
+        <p>The With Driver price covers the vehicle and the driver for up to 12 hours a day within Dar es Salaam, with reasonable breaks. Hours beyond that may be charged by agreement. For upcountry hire a daily allowance for the driver's meals and lodging is added, as shown on the price list. The driver may decline a route they consider unsafe, and their decision on the state of a road is final.</p>
         <h3>8. Cancellation (vehicles)</h3>
         <ul>
           <li>More than 72 hours before pick-up: full refund, or free date change.</li>
@@ -95,7 +102,7 @@ export default function Terms() {
         <p>Tell us during the hire or stay so we can fix it; a refund request after the fact is harder to assess. These terms are governed by the laws of the United Republic of Tanzania and the courts of Dar es Salaam.</p>
         <h3>18. Contact</h3>
         <p>
-          {COMPANY.name}, {s?.businessAddress}. {s?.businessEmail}, {s?.businessPhone}.
+          {COMPANY.name}, {s?.businessAddress}. {s?.businessEmail}, {s?.businessPhone}{s?.businessWhatsapp ? `, WhatsApp +${s.businessWhatsapp}` : ""}.
         </p>
       </div>
     </article>

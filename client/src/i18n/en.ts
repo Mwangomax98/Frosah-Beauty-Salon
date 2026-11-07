@@ -1,7 +1,12 @@
 export const en = {
   nav: {
-    cars: "Cars",
-    stays: "Stays",
+    cars: "Fleet",
+    selfDrive: "Self Drive",
+    withDriver: "With Driver",
+    alphard: "Toyota Alphard",
+    prices: "Prices",
+    reviews: "Reviews",
+    stays: "Short Stays",
     about: "About",
     contact: "Contact",
     bookNow: "Book now",

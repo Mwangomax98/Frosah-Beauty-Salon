@@ -25,6 +25,11 @@ export function Footer() {
               {t.common.call} {s?.businessPhone}
             </a>
           </div>
+          {s?.instagramUrl && (
+            <a href={s.instagramUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-2 text-sm font-bold hover:text-sky">
+              <InstagramIcon /> Instagram
+            </a>
+          )}
           <p className="mt-4 text-sm text-paper/70">
             <a href={`mailto:${s?.businessEmail}`} className="hover:text-spark">
               {s?.businessEmail}
@@ -34,28 +39,37 @@ export function Footer() {
           </p>
         </div>
         <div className="md:col-span-2">
-          <h3 className="font-display text-lg text-spark">{t.footer.company}</h3>
+          <h3 className="font-display text-lg text-spark">Car hire</h3>
           <ul className="mt-3 space-y-2 text-sm">
-            <li>
-              <Link to="/cars" className="hover:text-spark">
-                {COMPANY.carsBrand}
-              </Link>
-            </li>
-            <li>
-              <Link to="/stays" className="hover:text-spark">
-                {s?.bnbBrandName ?? COMPANY.staysBrand}
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="hover:text-spark">
-                {t.nav.about}
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="hover:text-spark">
-                {t.nav.contact}
-              </Link>
-            </li>
+            {[
+              ["/cars", t.nav.cars],
+              ["/self-drive", t.nav.selfDrive],
+              ["/with-driver", t.nav.withDriver],
+              ["/toyota-alphard", t.nav.alphard],
+              ["/prices", t.nav.prices],
+              ["/book/car", t.nav.bookNow],
+            ].map(([to, label]) => (
+              <li key={to}>
+                <Link to={to} className="hover:text-spark">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <h3 className="mt-6 font-display text-lg text-spark">{t.footer.company}</h3>
+          <ul className="mt-3 space-y-2 text-sm">
+            {[
+              ["/stays", s?.bnbBrandName ?? COMPANY.staysBrand],
+              ["/reviews", t.nav.reviews],
+              ["/about", t.nav.about],
+              ["/contact", t.nav.contact],
+            ].map(([to, label]) => (
+              <li key={to}>
+                <Link to={to} className="hover:text-spark">
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="md:col-span-3">
@@ -105,5 +119,15 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+export function InstagramIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+    </svg>
   );
 }

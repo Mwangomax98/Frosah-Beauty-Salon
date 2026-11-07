@@ -27,6 +27,14 @@ Types live in `shared/src/types.ts`; pricing in `shared/src/pricing.ts` (server 
 | POST | `/payments/webhook/:gateway` | gateway payload | `200` |
 | GET | `/ical/:propertyId/:token.ics` | | iCal feed of confirmed/pending stays + manual blocks for Airbnb/Booking.com import |
 | POST | `/contact` | `{name,email,phone,message}` | `{ ok: true }` (emails vendor) |
+| GET | `/reviews` | `?service=car\|stay\|general&limit` (optional) | `{ reviews: Review[], summary: { count, average } }` — approved only |
+| POST | `/reviews` | `{name,location?,service,rating 1–5,comment}` | `201 { ok, pending: true }` — hidden until approved in admin |
+
+Car prices — every vehicle has two booking options, each with its own price (`vehicleRates()` in `shared/src/pricing.ts`):
+- `self_drive`: `pricePerDayTzs` / `pricePerWeekTzs` / `pricePerMonthTzs`.
+- `with_driver`: `priceWithDriverPerDayTzs` / `…WeekTzs` / `…MonthTzs` (car + driver within Dar). When a with-driver price is null it falls back to self-drive + `settings.driverFeeDarTzs` per day.
+- `driverScope=upcountry` adds a `driver_upcountry` line of `settings.driverFeeUpcountryTzs` per day.
+- Seasonal rates are set on the self-drive day price; the with-driver premium is added on top.
 
 Availability rules (server enforced inside a transaction with `SELECT ... FOR UPDATE` on the item row):
 - Stay: `[checkIn, checkOut)` must not overlap any booking with status `pending|confirmed` on that property, or any `blocked_dates` row (inclusive end → treat as `[start, end+1)`).
@@ -61,6 +69,7 @@ Payments: `PAYMENT_GATEWAY=mock|flutterwave`. `online` → create `payments` row
 | GET/POST/PATCH/DELETE | `/extras[/:id]` | |
 | GET/POST/PATCH/DELETE | `/delivery-zones[/:id]` | |
 | GET/POST/PATCH/DELETE | `/promo-codes[/:id]` | |
+| GET/POST/PATCH/DELETE | `/reviews[/:id]` | all reviews incl. unapproved; PATCH `{ approved: true }` publishes |
 | GET/PUT | `/settings` | full `Settings` |
 | POST | `/uploads/image` | multipart image → `{ url }` (served from `/uploads/images/…`, re-encoded to WebP) |
 | GET | `/documents/:token` | streams a customer's uploaded licence/ID (admin only) |

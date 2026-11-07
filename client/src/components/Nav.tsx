@@ -19,13 +19,19 @@ export function Nav() {
     };
   }, [open]);
 
+  // Desktop shows the main links; the mobile menu shows everything.
   const links = [
-    { to: "/cars", label: t.nav.cars, sub: "Johnson Rentals" },
+    { to: "/cars", label: t.nav.cars, sub: "Car fleet" },
+    { to: "/self-drive", label: t.nav.selfDrive, sub: "Bila dereva" },
+    { to: "/with-driver", label: t.nav.withDriver, sub: "Pamoja na dereva" },
+    { to: "/toyota-alphard", label: t.nav.alphard, sub: "Luxury MPV" },
+    { to: "/prices", label: t.nav.prices },
     { to: "/stays", label: t.nav.stays, sub: settings?.bnbBrandName ?? "Stays" },
-    { to: "/about", label: t.nav.about },
+    { to: "/reviews", label: t.nav.reviews, mobileOnly: true },
+    { to: "/about", label: t.nav.about, mobileOnly: true },
     { to: "/contact", label: t.nav.contact },
   ];
-  const linkCls = ({ isActive }: { isActive: boolean }) => `relative py-2 text-sm font-bold tracking-wide uppercase transition-colors ${isActive ? "text-spark" : "text-paper hover:text-spark"}`;
+  const linkCls = ({ isActive }: { isActive: boolean }) => `relative py-2 text-sm font-bold tracking-wide whitespace-nowrap uppercase transition-colors ${isActive ? "text-spark" : "text-paper hover:text-spark"}`;
 
   return (
     <header className="sticky top-0 z-50 bg-brand text-paper">
@@ -34,8 +40,8 @@ export function Nav() {
       </a>
       <div className="container-x flex h-16 items-center justify-between gap-4">
         <Logo sub="Holdings · Dar" />
-        <nav aria-label="Main" className="hidden items-center gap-7 md:flex">
-          {links.map((l) => (
+        <nav aria-label="Main" className="hidden items-center gap-5 xl:flex">
+          {links.filter((l) => !l.mobileOnly).map((l) => (
             <NavLink key={l.to} to={l.to} className={linkCls}>
               {l.label}
             </NavLink>
@@ -47,7 +53,7 @@ export function Nav() {
           <NavLink to="/book/car" className="btn-primary btn-sm ml-1 hidden sm:inline-flex">
             {t.nav.bookNow}
           </NavLink>
-          <button type="button" className="ml-1 inline-flex h-10 w-10 items-center justify-center rounded-sm border-2 border-paper/30 md:hidden" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? t.nav.close : t.nav.menu} onClick={() => setOpen((o) => !o)}>
+          <button type="button" className="ml-1 inline-flex h-10 w-10 items-center justify-center rounded-sm border-2 border-paper/30 xl:hidden" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? t.nav.close : t.nav.menu} onClick={() => setOpen((o) => !o)}>
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
               {open ? <path d="M4 4l14 14M18 4L4 18" /> : <path d="M3 6h16M3 11h16M3 16h16" />}
             </svg>
@@ -55,11 +61,11 @@ export function Nav() {
         </div>
       </div>
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="border-t border-paper/15 bg-brand md:hidden">
+        <nav id="mobile-nav" aria-label="Mobile" className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-paper/15 bg-brand xl:hidden">
           <ul className="container-x flex flex-col py-3">
             {links.map((l) => (
               <li key={l.to} className="border-b border-paper/10 last:border-0">
-                <NavLink to={l.to} className={({ isActive }) => `flex items-baseline justify-between py-3.5 font-display text-2xl uppercase ${isActive ? "text-spark" : "text-paper"}`}>
+                <NavLink to={l.to} className={({ isActive }) => `flex items-baseline justify-between py-3 font-display text-2xl uppercase ${isActive ? "text-spark" : "text-paper"}`}>
                   {l.label}
                   {l.sub && <span className="font-sans text-xs font-normal normal-case text-paper/60">{l.sub}</span>}
                 </NavLink>

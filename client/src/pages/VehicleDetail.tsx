@@ -1,8 +1,10 @@
 import { Link, useParams, useSearchParams } from "react-router";
-import { useVehicle, useSettings } from "@/lib/queries";
+import { useVehicle } from "@/lib/queries";
 import { useSeo } from "@/lib/useSeo";
 import { useCurrency } from "@/lib/currency";
 import { Gallery } from "@/components/Gallery";
+import { RentalOptions } from "@/components/RentalOptions";
+import { carJsonLd } from "@/lib/seoData";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import { PageLoading, ErrorState } from "@/components/States";
 import { FALLBACK_CAR } from "@/content/images";
@@ -13,9 +15,12 @@ export default function VehicleDetail() {
   const { slug } = useParams();
   const [sp] = useSearchParams();
   const q = useVehicle(slug);
-  const { fmt, fmtBoth } = useCurrency();
-  const { data: settings } = useSettings();
-  useSeo({ title: q.data ? `${q.data.name} — hire in Dar es Salaam` : "Vehicle", description: q.data?.description.slice(0, 150) });
+  const { fmt } = useCurrency();
+  useSeo({
+    title: q.data ? `${q.data.name}${q.data.year ? ` ${q.data.year}` : ""} — self drive or with driver, Dar es Salaam` : "Vehicle",
+    description: q.data?.description.slice(0, 150),
+    jsonLd: q.data ? carJsonLd(q.data) : undefined,
+  });
 
   if (q.isPending) return <PageLoading />;
   if (q.isError) {
@@ -28,8 +33,9 @@ export default function VehicleDetail() {
   }
   const v = q.data;
   const images = v.images.length ? v.images : [FALLBACK_CAR];
-  const bookParams = new URLSearchParams({ vehicle: v.slug });
-  for (const k of ["from", "to", "rentalType"]) if (sp.get(k)) bookParams.set(k, sp.get(k)!);
+  const bookParams = new URLSearchParams();
+  for (const k of ["from", "to"]) if (sp.get(k)) bookParams.set(k, sp.get(k)!);
+  const highlight = sp.get("rentalType") === "with_driver" ? "with_driver" : sp.get("rentalType") === "self_drive" ? "self_drive" : undefined;
 
   return (
     <article className="container-x py-10 lg:py-14">
@@ -43,6 +49,12 @@ export default function VehicleDetail() {
         <div className="lg:col-span-7">
           <Gallery images={images} alt={v.name} />
           <h1 className="mt-8 text-5xl sm:text-6xl">{v.name}</h1>
+          {(v.model || v.year) && <p className="mt-2 text-lg text-brand">{[v.model, v.year && `Model year ${v.year}`].filter(Boolean).join(" · ")}</p>}
+          {v.slug === "toyota-alphard" && (
+            <Link to="/toyota-alphard" className="link-underline mt-2 inline-block font-bold text-spark-deep">
+              See the full Toyota Alphard page →
+            </Link>
+          )}
           <p className="mt-1 text-sm font-bold tracking-wider text-ink-soft uppercase">
             {v.category} · {v.transmission} · {v.drive} · {v.fuel}
           </p>
@@ -51,6 +63,8 @@ export default function VehicleDetail() {
           <h2 className="mt-10 text-3xl">Specs</h2>
           <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 border-t-2 border-line pt-4 sm:grid-cols-3">
             {[
+              ["Model", v.model || "—"],
+              ["Year", v.year ?? "—"],
               ["Seats", v.seats],
               ["Bags", v.bags],
               ["Transmission", v.transmission],
@@ -84,39 +98,10 @@ export default function VehicleDetail() {
         </div>
 
         <aside className="lg:col-span-5">
-          <div className="sticky top-24 border-2 border-brand bg-white p-5 shadow-hard">
-            <p className="eyebrow">Per day</p>
-            <p className="font-display text-5xl text-spark">{fmt(v.pricePerDayTzs)}</p>
-            <p className="text-sm text-ink-soft">{fmtBoth(v.pricePerDayTzs)}</p>
-            <dl className="mt-4 divide-y divide-line border-y border-line text-sm">
-              {v.pricePerWeekTzs && (
-                <div className="flex justify-between py-2">
-                  <dt>Per week</dt>
-                  <dd className="font-bold">{fmt(v.pricePerWeekTzs)}</dd>
-                </div>
-              )}
-              {v.pricePerMonthTzs && (
-                <div className="flex justify-between py-2">
-                  <dt>Per month</dt>
-                  <dd className="font-bold">{fmt(v.pricePerMonthTzs)}</dd>
-                </div>
-              )}
-              <div className="flex justify-between py-2">
-                <dt>Driver, within Dar</dt>
-                <dd className="font-bold">+{fmt(settings?.driverFeeDarTzs ?? 0)} / day</dd>
-              </div>
-              <div className="flex justify-between py-2">
-                <dt>Driver, upcountry</dt>
-                <dd className="font-bold">+{fmt(settings?.driverFeeUpcountryTzs ?? 0)} / day</dd>
-              </div>
-              <div className="flex justify-between py-2">
-                <dt>Refundable deposit</dt>
-                <dd className="font-bold">{fmt(v.depositTzs)}</dd>
-              </div>
-            </dl>
-            <Link to={`/book/car?${bookParams}`} className="btn-primary mt-5 w-full text-lg">
-              Start booking →
-            </Link>
+          <div className="sticky top-24">
+            <p className="eyebrow">Choose how you want to rent</p>
+            <h2 className="mt-1 mb-4 text-3xl">Two options, two prices</h2>
+            <RentalOptions vehicle={v} params={bookParams} highlight={highlight} />
             <p className="mt-3 text-xs text-ink-soft">No charge until you confirm. Airport delivery to JNIA included; other addresses by zone.</p>
           </div>
         </aside>
