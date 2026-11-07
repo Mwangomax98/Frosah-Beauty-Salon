@@ -5,6 +5,7 @@ import { catalogRouter } from "./catalog.ts";
 import { contactRouter } from "./contact.ts";
 import { icalRouter } from "./ical.ts";
 import { paymentsRouter } from "./payments.ts";
+import { reviewsRouter } from "./reviews.ts";
 import { uploadsRouter } from "./uploads.ts";
 
 export const publicRouter = Router();
@@ -17,3 +18,4 @@ publicRouter.use(uploadsRouter);
 publicRouter.use(paymentsRouter);
 publicRouter.use(icalRouter);
 publicRouter.use(contactRouter);
+publicRouter.use(reviewsRouter);

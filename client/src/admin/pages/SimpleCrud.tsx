@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
-import type { DeliveryZone, Extra, PromoCode } from "@bluesparks/shared";
-import { useAdminExtras, useAdminPromos, useAdminZones, useCrud } from "../api";
+import type { DeliveryZone, Extra, PromoCode, Review } from "@bluesparks/shared";
+import { useAdminExtras, useAdminPromos, useAdminReviews, useAdminZones, useCrud } from "../api";
 import { PageHead, ConfirmButton, numInput, toNum, toNumOrNull } from "../components";
 import { Input, Select, Textarea, Checkbox } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -205,6 +205,55 @@ export function Promos() {
             <Input label="Max uses" type="number" min={0} value={numInput(v.maxUses)} onChange={(e) => set({ maxUses: toNumOrNull(e.target.value) })} hint="Blank = unlimited" />
           </div>
           <Checkbox label="Active" checked={v.active} onChange={(e) => set({ active: e.target.checked })} />
+        </>
+      )}
+    />
+  );
+}
+
+export function Reviews() {
+  const q = useAdminReviews();
+  const crud = useCrud<Review>("reviews", "/admin/reviews");
+  const { toast } = useToast();
+  const pending = q.data?.filter((r) => !r.approved).length ?? 0;
+  return (
+    <CrudPage<Review>
+      title="Customer reviews"
+      intro={`Reviews sent from the website wait here until you approve them${pending ? ` — ${pending} waiting` : ""}. You can also add reviews customers sent on WhatsApp, Instagram or Google (with their permission).`}
+      query={q}
+      crud={crud}
+      label={(r) => `the review by ${r.name}`}
+      columns={[
+        {
+          h: "Status",
+          cell: (r) =>
+            r.approved ? (
+              <span className="font-bold text-ok">Published</span>
+            ) : (
+              <Button size="sm" onClick={() => crud.update.mutate({ id: r.id, approved: true }, { onSuccess: () => toast("Review published", "ok"), onError: (e) => toast(errorMessage(e), "error") })}>
+                Approve
+              </Button>
+            ),
+        },
+        { h: "Rating", cell: (r) => <span className="text-spark">{"★".repeat(r.rating)}</span> },
+        { h: "Name", cell: (r) => <><b>{r.name}</b>{r.location && <span className="block text-xs text-ink-soft">{r.location}</span>}</> },
+        { h: "Service", cell: (r) => r.service },
+        { h: "Review", cell: (r) => <span className="line-clamp-3 max-w-md">{r.comment}</span> },
+        { h: "Date", cell: (r) => new Date(r.createdAt).toLocaleDateString("en-GB") },
+      ]}
+      empty={{ name: "", location: "", service: "car", rating: 5, comment: "", approved: true, createdAt: "" }}
+      form={(v, set) => (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Customer name" required value={v.name} onChange={(e) => set({ name: e.target.value })} />
+            <Input label="Location" value={v.location} onChange={(e) => set({ location: e.target.value })} placeholder="Arusha" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Select label="Service" value={v.service} onChange={(e) => set({ service: e.target.value as Review["service"] })} options={[{ value: "car", label: "Car hire" }, { value: "stay", label: "Short stay" }, { value: "general", label: "General" }]} />
+            <Select label="Rating" value={String(v.rating)} onChange={(e) => set({ rating: Number(e.target.value) })} options={[5, 4, 3, 2, 1].map((n) => ({ value: String(n), label: "★".repeat(n) }))} />
+          </div>
+          <Textarea label="Review" required value={v.comment} onChange={(e) => set({ comment: e.target.value })} hint="Exactly as the customer wrote it." />
+          <Checkbox label="Published on the website" checked={v.approved} onChange={(e) => set({ approved: e.target.checked })} />
         </>
       )}
     />

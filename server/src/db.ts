@@ -7,6 +7,7 @@ import type {
   Payment,
   PromoCode,
   Property,
+  Review,
   SeasonalRate,
   Settings,
   Vehicle,
@@ -120,6 +121,8 @@ export function rowToVehicle(r: Row): Vehicle {
     id: num(r.id),
     slug: str(r.slug),
     name: str(r.name),
+    model: str(r.model),
+    year: numOrNull(r.year),
     category: str(r.category),
     seats: num(r.seats),
     bags: num(r.bags),
@@ -131,6 +134,9 @@ export function rowToVehicle(r: Row): Vehicle {
     pricePerDayTzs: num(r.price_per_day_tzs),
     pricePerWeekTzs: numOrNull(r.price_per_week_tzs),
     pricePerMonthTzs: numOrNull(r.price_per_month_tzs),
+    priceWithDriverPerDayTzs: numOrNull(r.price_with_driver_per_day_tzs),
+    priceWithDriverPerWeekTzs: numOrNull(r.price_with_driver_per_week_tzs),
+    priceWithDriverPerMonthTzs: numOrNull(r.price_with_driver_per_month_tzs),
     mileagePolicy: str(r.mileage_policy),
     depositTzs: num(r.deposit_tzs),
     description: str(r.description),
@@ -289,17 +295,35 @@ export function rowToPayment(r: Row): Payment & { txRef: string } {
   };
 }
 
+export function rowToReview(r: Row): Review {
+  return {
+    id: num(r.id),
+    name: str(r.name),
+    location: str(r.location),
+    service: r.service as Review["service"],
+    rating: num(r.rating),
+    comment: str(r.comment),
+    approved: bool(r.approved),
+    createdAt: isoTimestamp(r.created_at),
+  };
+}
+
+/** Blue Spark's booking line (0625 102 051) in E.164 without "+". */
+export const BUSINESS_WHATSAPP = "255625102051";
+
 export const DEFAULT_SETTINGS: Settings = {
   usdRate: 2600,
   driverFeeDarTzs: 40000,
   driverFeeUpcountryTzs: 60000,
   bundleDiscountPercent: 10,
-  businessWhatsapp: "255700000000",
+  businessWhatsapp: BUSINESS_WHATSAPP,
   vendorEmail: "bookings@example.com",
   businessEmail: "info@example.com",
-  businessPhone: "+255 700 000 000",
+  businessPhone: "+255 625 102 051",
   businessAddress: "Masaki, Dar es Salaam",
   bnbBrandName: "Blue Spark Stays",
+  instagramUrl: "",
+  googleMapsUrl: "",
 };
 
 const NUMERIC_SETTINGS: (keyof Settings)[] = ["usdRate", "driverFeeDarTzs", "driverFeeUpcountryTzs", "bundleDiscountPercent"];

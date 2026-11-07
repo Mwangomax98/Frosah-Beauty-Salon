@@ -31,6 +31,10 @@ export interface Vehicle {
   id: number;
   slug: string;
   name: string;
+  /** Model / trim, e.g. "Alphard Executive Lounge". Shown next to the name. */
+  model: string;
+  /** Model year, e.g. 2021. */
+  year: number | null;
   category: string;
   seats: number;
   bags: number;
@@ -39,9 +43,17 @@ export interface Vehicle {
   fuel: string;
   features: string[];
   images: string[];
+  /** Self-drive rates (customer drives). */
   pricePerDayTzs: number;
   pricePerWeekTzs: number | null;
   pricePerMonthTzs: number | null;
+  /**
+   * With-driver rates (car + our driver, within Dar es Salaam). Every car offers both options.
+   * When null, the price falls back to the self-drive rate + settings.driverFeeDarTzs.
+   */
+  priceWithDriverPerDayTzs: number | null;
+  priceWithDriverPerWeekTzs: number | null;
+  priceWithDriverPerMonthTzs: number | null;
   mileagePolicy: string;
   depositTzs: number;
   description: string;
@@ -130,8 +142,10 @@ export interface BlockedDate {
 /** Site-wide settings editable from the admin dashboard. */
 export interface Settings {
   usdRate: number; // TZS per 1 USD
-  driverFeeDarTzs: number; // per day
-  driverFeeUpcountryTzs: number; // per day
+  /** Default driver fee per day, used only for cars that have no with-driver price of their own. */
+  driverFeeDarTzs: number;
+  /** Upcountry allowance per day (driver's meals + lodging), added on top of the with-driver price. */
+  driverFeeUpcountryTzs: number;
   bundleDiscountPercent: number;
   businessWhatsapp: string; // E.164 without "+", e.g. 2557XXXXXXXX
   vendorEmail: string;
@@ -139,6 +153,28 @@ export interface Settings {
   businessPhone: string;
   businessAddress: string;
   bnbBrandName: string;
+  /** Full Instagram profile URL, e.g. https://instagram.com/bluesparks. Empty = hidden. */
+  instagramUrl: string;
+  /** Google Maps link to the office (share link). Empty = built from businessAddress. */
+  googleMapsUrl: string;
+}
+
+export type ReviewService = Service | "general";
+
+export interface Review {
+  id: number;
+  name: string;
+  location: string;
+  service: ReviewService;
+  rating: number; // 1–5
+  comment: string;
+  approved: boolean;
+  createdAt: string;
+}
+
+export interface ReviewSummary {
+  count: number;
+  average: number; // 0 when there are no reviews
 }
 
 export interface LineItem {

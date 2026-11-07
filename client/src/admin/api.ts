@@ -1,6 +1,6 @@
 // Admin data hooks. All under /api/admin, token attached by lib/api.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { BlockedDate, Booking, DeliveryZone, Extra, Payment, PromoCode, Property, SeasonalRate, Settings, Vehicle, Service } from "@bluesparks/shared";
+import type { BlockedDate, Booking, DeliveryZone, Extra, Payment, PromoCode, Property, Review, SeasonalRate, Settings, Vehicle, Service } from "@bluesparks/shared";
 import { API_BASE, api, getAdminToken, qs } from "@/lib/api";
 
 export type AdminProperty = Property & { icalExportUrl?: string; icalToken?: string };
@@ -59,6 +59,7 @@ export const useAdminProperties = () => useAdminList<AdminProperty>("properties"
 export const useAdminExtras = () => useAdminList<Extra>("extras", "/admin/extras");
 export const useAdminZones = () => useAdminList<DeliveryZone>("delivery-zones", "/admin/delivery-zones");
 export const useAdminPromos = () => useAdminList<PromoCode>("promo-codes", "/admin/promo-codes");
+export const useAdminReviews = () => useAdminList<Review>("reviews", "/admin/reviews");
 export const useAdminRates = () => useAdminList<SeasonalRate>("seasonal-rates", "/admin/seasonal-rates");
 export const useAdminSettings = () => useQuery({ queryKey: ["admin", "settings"], queryFn: () => api.get<Settings>("/admin/settings") });
 

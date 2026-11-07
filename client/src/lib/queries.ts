@@ -1,6 +1,6 @@
 // React Query hooks for the public API.
 import { useQuery } from "@tanstack/react-query";
-import type { DeliveryZone, Extra, Property, Settings, Vehicle } from "@bluesparks/shared";
+import type { DeliveryZone, Extra, Property, Review, ReviewService, ReviewSummary, Settings, Vehicle } from "@bluesparks/shared";
 import { api } from "./api";
 
 export type PublicSettings = Omit<Settings, "vendorEmail">;
@@ -11,11 +11,13 @@ export const FALLBACK_SETTINGS: PublicSettings = {
   driverFeeDarTzs: 50000,
   driverFeeUpcountryTzs: 80000,
   bundleDiscountPercent: 10,
-  businessWhatsapp: "255700000000", // PLACEHOLDER until settings load
+  businessWhatsapp: "255625102051", // 0625 102 051 — Blue Spark booking line
   businessEmail: "hello@bluesparks.co.tz",
-  businessPhone: "+255 700 000 000",
+  businessPhone: "+255 625 102 051",
   businessAddress: "Masaki, Dar es Salaam",
   bnbBrandName: "Blue Spark Stays",
+  instagramUrl: "",
+  googleMapsUrl: "",
 };
 
 export function useSettings() {
@@ -68,5 +70,13 @@ export function useDeliveryZones() {
   return useQuery({
     queryKey: ["delivery-zones"],
     queryFn: ({ signal }) => api.get<DeliveryZone[]>("/delivery-zones", undefined, signal),
+  });
+}
+
+export function useReviews(params?: { service?: ReviewService; limit?: number }) {
+  return useQuery({
+    queryKey: ["reviews", params ?? {}],
+    queryFn: ({ signal }) => api.get<{ reviews: Review[]; summary: ReviewSummary }>("/reviews", params, signal),
+    staleTime: 5 * 60_000,
   });
 }

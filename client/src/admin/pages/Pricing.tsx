@@ -64,8 +64,8 @@ export default function Pricing() {
         {settings.isError && <ErrorState error={settings.error} compact />}
         {s && (
           <>
-            <Input label="Driver fee, Dar (TZS/day)" type="number" min={0} value={numInput(s.driverFeeDarTzs)} onChange={(e) => setFees({ ...settings.data, ...fees, driverFeeDarTzs: toNum(e.target.value) })} />
-            <Input label="Driver fee, upcountry (TZS/day)" type="number" min={0} value={numInput(s.driverFeeUpcountryTzs)} onChange={(e) => setFees({ ...settings.data, ...fees, driverFeeUpcountryTzs: toNum(e.target.value) })} />
+            <Input label="Default driver fee (TZS/day)" hint="Only used for cars without their own with-driver price." type="number" min={0} value={numInput(s.driverFeeDarTzs)} onChange={(e) => setFees({ ...settings.data, ...fees, driverFeeDarTzs: toNum(e.target.value) })} />
+            <Input label="Upcountry allowance (TZS/day)" hint="Added on top of the with-driver price for upcountry trips." type="number" min={0} value={numInput(s.driverFeeUpcountryTzs)} onChange={(e) => setFees({ ...settings.data, ...fees, driverFeeUpcountryTzs: toNum(e.target.value) })} />
             <Input label="Bundle discount (%)" type="number" min={0} max={100} value={numInput(s.bundleDiscountPercent)} onChange={(e) => setFees({ ...settings.data, ...fees, bundleDiscountPercent: toNum(e.target.value) })} />
             <Input label="USD rate (TZS per $1)" type="number" min={1} value={numInput(s.usdRate)} onChange={(e) => setFees({ ...settings.data, ...fees, usdRate: toNum(e.target.value) })} />
             <div className="sm:col-span-4">

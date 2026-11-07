@@ -10,6 +10,7 @@ import {
   rowToExtra,
   rowToPromoCode,
   rowToProperty,
+  rowToReview,
   rowToSeasonalRate,
   rowToVehicle,
   toJson,
@@ -117,6 +118,8 @@ const strArray = z.array(z.string().trim().max(255)).max(50);
 const vehicleSchema = z.object({
   slug,
   name: z.string().trim().min(2).max(160),
+  model: z.string().trim().max(120).default(""),
+  year: z.coerce.number().int().min(1980).max(2100).nullable().default(null),
   category: z.string().trim().max(60).default("SUV"),
   seats: z.coerce.number().int().min(1).max(60).default(5),
   bags: z.coerce.number().int().min(0).max(30).default(2),
@@ -128,10 +131,22 @@ const vehicleSchema = z.object({
   pricePerDayTzs: money,
   pricePerWeekTzs: moneyOrNull.default(null),
   pricePerMonthTzs: moneyOrNull.default(null),
+  priceWithDriverPerDayTzs: moneyOrNull.default(null),
+  priceWithDriverPerWeekTzs: moneyOrNull.default(null),
+  priceWithDriverPerMonthTzs: moneyOrNull.default(null),
   mileagePolicy: z.string().trim().max(255).default("Unlimited within Dar es Salaam"),
   depositTzs: money.default(0),
   description: z.string().trim().max(5000).default(""),
   active: z.boolean().default(true),
+});
+
+export const reviewSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  location: z.string().trim().max(120).default(""),
+  service: z.enum(["car", "stay", "general"]).default("general"),
+  rating: z.coerce.number().int().min(1).max(5),
+  comment: z.string().trim().min(10).max(2000),
+  approved: z.boolean().default(true),
 });
 
 const propertySchema = z.object({
@@ -208,8 +223,9 @@ crud(adminCatalogRouter, {
   json: ["features", "images"],
   map: rowToVehicle,
   columns: {
-    slug: "slug", name: "name", category: "category", seats: "seats", bags: "bags", transmission: "transmission", drive: "drive", fuel: "fuel",
+    slug: "slug", name: "name", model: "model", year: "year", category: "category", seats: "seats", bags: "bags", transmission: "transmission", drive: "drive", fuel: "fuel",
     features: "features", images: "images", pricePerDayTzs: "price_per_day_tzs", pricePerWeekTzs: "price_per_week_tzs", pricePerMonthTzs: "price_per_month_tzs",
+    priceWithDriverPerDayTzs: "price_with_driver_per_day_tzs", priceWithDriverPerWeekTzs: "price_with_driver_per_week_tzs", priceWithDriverPerMonthTzs: "price_with_driver_per_month_tzs",
     mileagePolicy: "mileage_policy", depositTzs: "deposit_tzs", description: "description", active: "active",
   },
 });
@@ -276,4 +292,15 @@ crud(adminCatalogRouter, {
   orderBy: "active DESC, code ASC",
   map: rowToPromoCode,
   columns: { code: "code", type: "type", value: "value", service: "service", validFrom: "valid_from", validTo: "valid_to", maxUses: "max_uses", active: "active" },
+});
+
+// Customer reviews: submitted from the public site as unapproved; the admin approves, edits or deletes them,
+// and can also add reviews received on WhatsApp, Instagram or Google.
+crud(adminCatalogRouter, {
+  path: "reviews",
+  table: "reviews",
+  schema: reviewSchema,
+  orderBy: "approved ASC, created_at DESC",
+  map: rowToReview,
+  columns: { name: "name", location: "location", service: "service", rating: "rating", comment: "comment", approved: "approved" },
 });

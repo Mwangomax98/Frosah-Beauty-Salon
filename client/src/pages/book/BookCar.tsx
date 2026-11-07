@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Booking, CarBookingInput, Quote, Vehicle, PickupLocationCode, RentalType, DriverScope, PaymentMethod } from "@bluesparks/shared";
-import { PICKUP_LOCATIONS, addDays, quoteCar, rentalDays, COMPANY } from "@bluesparks/shared";
+import { PICKUP_LOCATIONS, addDays, quoteCar, rentalDays, vehicleRates, COMPANY } from "@bluesparks/shared";
 import { useSeo } from "@/lib/useSeo";
 import { api, errorMessage, ApiError } from "@/lib/api";
 import { useCurrency } from "@/lib/currency";
@@ -13,6 +13,7 @@ import { VehicleCard } from "@/components/VehicleCard";
 import { Skeleton, ErrorState, EmptyState } from "@/components/States";
 import { useToast } from "@/components/ui/Toast";
 import { fmtDate, tomorrow } from "@/lib/format";
+import { carWhatsappLink } from "@/lib/whatsapp";
 import { BookingShell, StepNav, SummaryBox, CustomerFields, DocumentUpload, QuoteTable, PaymentChoice, PromoField, TermsLine, FormAlert, useStep, type UploadedDoc, type CustomerForm } from "./shared";
 import { carDatesSchema, carDetailsSchema, flatten, fromServer, type FieldErrors } from "./schemas";
 
@@ -45,7 +46,7 @@ interface State {
 }
 
 export default function BookCar() {
-  useSeo({ title: "Book a car — Johnson Rentals", noindex: true });
+  useSeo({ title: "Book a car — Self Drive or With Driver", noindex: true });
   const [sp] = useSearchParams();
   const nav = useNavigate();
   const { toast } = useToast();
@@ -56,9 +57,9 @@ export default function BookCar() {
 
   const [f, setF] = useState<State>(() => ({
     pickupDate: sp.get("from") ?? tomorrow(),
-    pickupTime: "10:00",
+    pickupTime: /^\d{2}:\d{2}$/.test(sp.get("pickupTime") ?? "") ? sp.get("pickupTime")! : "10:00",
     returnDate: sp.get("to") ?? addDays(sp.get("from") ?? tomorrow(), 3),
-    returnTime: "10:00",
+    returnTime: /^\d{2}:\d{2}$/.test(sp.get("returnTime") ?? "") ? sp.get("returnTime")! : "10:00",
     pickupLocation: "jnia",
     dropoffLocation: "jnia",
     pickupAddress: "",
@@ -85,6 +86,9 @@ export default function BookCar() {
   const zones = useDeliveryZones();
   const extras = useExtras("car");
   const vehicle: Vehicle | undefined = useMemo(() => vehicles.data?.find((v) => v.slug === f.vehicleSlug), [vehicles.data, f.vehicleSlug]);
+  // The car may be pre-selected (from a car page) before the rental type step; show its two prices there.
+  const preselected = vehicle ?? vehicles.data?.find((v) => v.slug === f.vehicleSlug);
+  const chosenRates = preselected ? { name: preselected.name, self: vehicleRates(preselected, "self_drive", s), driver: vehicleRates(preselected, "with_driver", s) } : null;
   const days = rentalDays(f.pickupDate, f.pickupTime, f.returnDate, f.returnTime);
   const needsZone = f.pickupLocation === "custom" || f.dropoffLocation === "custom";
 
@@ -216,7 +220,7 @@ export default function BookCar() {
         ["Pick-up", `${fmtDate(f.pickupDate, { weekday: true, year: false })}, ${f.pickupTime}`],
         ["Return", `${fmtDate(f.returnDate, { weekday: true, year: false })}, ${f.returnTime}`],
         ["Days", String(days)],
-        ["Type", f.rentalType === "with_driver" ? `With driver (${f.driverScope === "dar" ? "Dar" : "upcountry"})` : "Self-drive"],
+        ["Option", f.rentalType === "with_driver" ? `With Driver (${f.driverScope === "dar" ? "Dar" : "upcountry"})` : "Self Drive"],
         ...(f.bundleWithBookingRef ? ([["Bundle", `with ${f.bundleWithBookingRef}`]] as [string, string][]) : []),
       ]}
     >
@@ -227,6 +231,23 @@ export default function BookCar() {
           <span className="text-xs text-ink-soft">Final price confirmed at review</span>
         </p>
       )}
+      <a
+        href={carWhatsappLink(s.businessWhatsapp, {
+          vehicle: vehicle ?? null,
+          rentalType: f.rentalType,
+          from: f.pickupDate,
+          to: f.returnDate,
+          pickupTime: f.pickupTime,
+          returnTime: f.returnTime,
+          pickup: PICKUP_LOCATIONS.find((l) => l.code === f.pickupLocation)?.label,
+          priceText: preview && preview.totalTzs > 0 ? `${fmt(preview.totalTzs)} estimate` : undefined,
+        })}
+        target="_blank"
+        rel="noopener"
+        className="btn-ghost btn-sm mt-4 w-full"
+      >
+        Prefer WhatsApp? Send these details
+      </a>
     </SummaryBox>
   );
 
@@ -273,8 +294,16 @@ export default function BookCar() {
               value={f.rentalType}
               onChange={(v) => patch({ rentalType: v })}
               options={[
-                { value: "self_drive", label: "Self-drive", hint: "You drive. Licence + ID required." },
-                { value: "with_driver", label: "With driver", hint: `+${fmt(s.driverFeeDarTzs)}/day in Dar · +${fmt(s.driverFeeUpcountryTzs)}/day upcountry` },
+                {
+                  value: "self_drive",
+                  label: "Self Drive",
+                  hint: chosenRates ? `${fmt(chosenRates.self.day)}/day for the ${chosenRates.name}. You drive; licence + ID required.` : "You drive. Licence + ID required. Each car has its own self-drive price.",
+                },
+                {
+                  value: "with_driver",
+                  label: "With Driver",
+                  hint: chosenRates ? `${fmt(chosenRates.driver.day)}/day for the ${chosenRates.name}, driver included. Upcountry +${fmt(s.driverFeeUpcountryTzs)}/day.` : `Car + our driver. Each car has its own with-driver price. Upcountry +${fmt(s.driverFeeUpcountryTzs)}/day.`,
+                },
               ]}
             />
             {f.rentalType === "with_driver" && (
@@ -285,7 +314,7 @@ export default function BookCar() {
                 onChange={(v) => patch({ driverScope: v })}
                 options={[
                   { value: "dar", label: "Within Dar es Salaam", hint: "Up to 12 hours a day, driver goes home at night" },
-                  { value: "upcountry", label: "Upcountry", hint: "Driver's meals and lodging included in the fee" },
+                  { value: "upcountry", label: "Upcountry", hint: `Adds ${fmt(s.driverFeeUpcountryTzs)}/day for the driver's meals and lodging` },
                 ]}
               />
             )}
@@ -302,7 +331,7 @@ export default function BookCar() {
               ) : (
                 <>
                   <p className="font-bold text-brand">With a driver</p>
-                  <p className="mt-1 text-ink-soft">Our drivers are licensed, know the back way around Ubungo at rush hour, and speak English and Swahili. Fuel for the trip is on you; the driver's fee covers his time, and his lodging if you go upcountry. No deposit needed.</p>
+                  <p className="mt-1 text-ink-soft">Our drivers are licensed, know the back way around Ubungo at rush hour, and speak English and Swahili. Fuel for the trip is on you; the with-driver price covers the car and the driver's time; going upcountry adds a daily allowance for the driver's meals and lodging. No deposit needed.</p>
                 </>
               )}
             </div>
@@ -328,7 +357,7 @@ export default function BookCar() {
                 </div>
               )}
               {vehicles.data?.map((v) => (
-                <VehicleCard key={v.id} v={v} compact onChoose={() => patch({ vehicleSlug: v.slug })} chosen={v.slug === f.vehicleSlug} />
+                <VehicleCard key={v.id} v={v} compact onChoose={() => patch({ vehicleSlug: v.slug })} chosen={v.slug === f.vehicleSlug} rentalType={f.rentalType} />
               ))}
               {vehicles.data?.length === 0 && (
                 <div className="sm:col-span-2">

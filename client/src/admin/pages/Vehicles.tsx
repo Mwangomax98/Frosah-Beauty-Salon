@@ -10,7 +10,7 @@ import { ErrorState, Skeleton } from "@/components/States";
 import { errorMessage } from "@/lib/api";
 import { useCurrency } from "@/lib/currency";
 
-const EMPTY: Omit<Vehicle, "id"> = { slug: "", name: "", category: "SUV", seats: 5, bags: 3, transmission: "automatic", drive: "4WD", fuel: "Diesel", features: [], images: [], pricePerDayTzs: 0, pricePerWeekTzs: null, pricePerMonthTzs: null, mileagePolicy: "Unlimited within Dar es Salaam; 250 km/day upcountry, TZS 500 per extra km.", depositTzs: 0, description: "", active: true };
+const EMPTY: Omit<Vehicle, "id"> = { slug: "", name: "", model: "", year: new Date().getFullYear(), category: "SUV", seats: 5, bags: 3, transmission: "automatic", drive: "4WD", fuel: "Diesel", features: [], images: [], pricePerDayTzs: 0, pricePerWeekTzs: null, pricePerMonthTzs: null, priceWithDriverPerDayTzs: null, priceWithDriverPerWeekTzs: null, priceWithDriverPerMonthTzs: null, mileagePolicy: "Unlimited within Dar es Salaam; 250 km/day upcountry, TZS 500 per extra km.", depositTzs: 0, description: "", active: true };
 
 export default function Vehicles() {
   const q = useAdminVehicles();
@@ -55,9 +55,10 @@ export default function Vehicles() {
                 <th>Vehicle</th>
                 <th>Category</th>
                 <th>Seats</th>
-                <th>Day</th>
-                <th>Week</th>
-                <th>Month</th>
+                <th>Year</th>
+                <th>Self drive / day</th>
+                <th>With driver / day</th>
+                <th>Week (self)</th>
                 <th>Deposit</th>
                 <th>Active</th>
                 <th></th>
@@ -75,9 +76,10 @@ export default function Vehicles() {
                   </td>
                   <td>{v.category}</td>
                   <td>{v.seats}</td>
+                  <td>{v.year ?? "—"}</td>
                   <td className="tabular">{fmt(v.pricePerDayTzs)}</td>
+                  <td className="tabular">{v.priceWithDriverPerDayTzs ? fmt(v.priceWithDriverPerDayTzs) : <span className="text-warn">not set</span>}</td>
                   <td className="tabular">{v.pricePerWeekTzs ? fmt(v.pricePerWeekTzs) : "—"}</td>
-                  <td className="tabular">{v.pricePerMonthTzs ? fmt(v.pricePerMonthTzs) : "—"}</td>
                   <td className="tabular">{fmt(v.depositTzs)}</td>
                   <td>{v.active ? "Yes" : "No"}</td>
                   <td className="whitespace-nowrap">
@@ -118,17 +120,28 @@ export default function Vehicles() {
             }}
           >
             <Input label="Name" required value={editing.name} onChange={(e) => set({ name: e.target.value })} />
-            <Input label="Slug" value={editing.slug} onChange={(e) => set({ slug: e.target.value })} hint="Leave blank to generate from the name." />
+            <Input label="Slug" value={editing.slug} onChange={(e) => set({ slug: e.target.value })} hint="Leave blank to generate from the name. The Alphard page uses toyota-alphard." />
+            <Input label="Model / trim" value={editing.model} onChange={(e) => set({ model: e.target.value })} placeholder="e.g. Alphard Executive Lounge" />
+            <Input label="Year" type="number" min={1980} max={2100} value={numInput(editing.year)} onChange={(e) => set({ year: toNumOrNull(e.target.value) })} />
             <Input label="Category" value={editing.category} onChange={(e) => set({ category: e.target.value })} placeholder="SUV, Van, Hatchback, Pickup" />
             <Input label="Fuel" value={editing.fuel} onChange={(e) => set({ fuel: e.target.value })} />
             <Input label="Seats" type="number" min={1} value={numInput(editing.seats)} onChange={(e) => set({ seats: toNum(e.target.value) })} />
             <Input label="Bags" type="number" min={0} value={numInput(editing.bags)} onChange={(e) => set({ bags: toNum(e.target.value) })} />
             <Select label="Transmission" value={editing.transmission} onChange={(e) => set({ transmission: e.target.value as Vehicle["transmission"] })} options={[{ value: "automatic", label: "Automatic" }, { value: "manual", label: "Manual" }]} />
             <Select label="Drive" value={editing.drive} onChange={(e) => set({ drive: e.target.value as Vehicle["drive"] })} options={[{ value: "2WD", label: "2WD" }, { value: "4WD", label: "4WD" }]} />
-            <Input label="Price per day (TZS)" type="number" min={0} required value={numInput(editing.pricePerDayTzs)} onChange={(e) => set({ pricePerDayTzs: toNum(e.target.value) })} />
-            <Input label="Deposit (TZS)" type="number" min={0} value={numInput(editing.depositTzs)} onChange={(e) => set({ depositTzs: toNum(e.target.value) })} />
-            <Input label="Price per week (TZS, optional)" type="number" min={0} value={numInput(editing.pricePerWeekTzs)} onChange={(e) => set({ pricePerWeekTzs: toNumOrNull(e.target.value) })} />
-            <Input label="Price per month (TZS, optional)" type="number" min={0} value={numInput(editing.pricePerMonthTzs)} onChange={(e) => set({ pricePerMonthTzs: toNumOrNull(e.target.value) })} />
+            <fieldset className="grid gap-4 border-2 border-line p-4 sm:col-span-2 sm:grid-cols-3">
+              <legend className="px-1 text-sm font-bold text-brand">Self Drive prices (customer drives)</legend>
+              <Input label="Per day (TZS)" type="number" min={0} required value={numInput(editing.pricePerDayTzs)} onChange={(e) => set({ pricePerDayTzs: toNum(e.target.value) })} />
+              <Input label="Per week (optional)" type="number" min={0} value={numInput(editing.pricePerWeekTzs)} onChange={(e) => set({ pricePerWeekTzs: toNumOrNull(e.target.value) })} />
+              <Input label="Per month (optional)" type="number" min={0} value={numInput(editing.pricePerMonthTzs)} onChange={(e) => set({ pricePerMonthTzs: toNumOrNull(e.target.value) })} />
+            </fieldset>
+            <fieldset className="grid gap-4 border-2 border-line p-4 sm:col-span-2 sm:grid-cols-3">
+              <legend className="px-1 text-sm font-bold text-brand">With Driver prices (car + driver, within Dar)</legend>
+              <Input label="Per day (TZS)" type="number" min={0} value={numInput(editing.priceWithDriverPerDayTzs)} onChange={(e) => set({ priceWithDriverPerDayTzs: toNumOrNull(e.target.value) })} hint="Blank = self-drive price + default driver fee." />
+              <Input label="Per week (optional)" type="number" min={0} value={numInput(editing.priceWithDriverPerWeekTzs)} onChange={(e) => set({ priceWithDriverPerWeekTzs: toNumOrNull(e.target.value) })} />
+              <Input label="Per month (optional)" type="number" min={0} value={numInput(editing.priceWithDriverPerMonthTzs)} onChange={(e) => set({ priceWithDriverPerMonthTzs: toNumOrNull(e.target.value) })} />
+            </fieldset>
+            <Input label="Deposit for self drive (TZS)" type="number" min={0} value={numInput(editing.depositTzs)} onChange={(e) => set({ depositTzs: toNum(e.target.value) })} />
             <Textarea label="Description" className="sm:col-span-2" value={editing.description} onChange={(e) => set({ description: e.target.value })} />
             <Textarea label="Mileage policy" className="sm:col-span-2" value={editing.mileagePolicy} onChange={(e) => set({ mileagePolicy: e.target.value })} />
             <div className="sm:col-span-2">

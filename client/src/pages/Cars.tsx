@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import { addDays, COMPANY } from "@bluesparks/shared";
-import { useVehicles } from "@/lib/queries";
+import { addDays, COMPANY, vehicleRates } from "@bluesparks/shared";
+import { useSettings, useVehicles, FALLBACK_SETTINGS } from "@/lib/queries";
 import { useSeo } from "@/lib/useSeo";
 import { VehicleCard } from "@/components/VehicleCard";
 import { DateField } from "@/components/ui/DateField";
@@ -14,7 +14,9 @@ import { useT } from "@/i18n";
 type Sort = "price_asc" | "price_desc" | "seats";
 
 export default function Cars() {
-  useSeo({ title: "Car hire in Dar es Salaam — Johnson Rentals", description: "Self-drive and chauffeur-driven car hire in Dar es Salaam: Land Cruiser Prado, RAV4, Noah, Hilux, Harrier. Airport pickup at JNIA, weekly and monthly rates." });
+  useSeo({ title: "Car fleet — car hire in Dar es Salaam", description: "Every car with photos, model, year and two prices: self drive or with driver. Toyota Alphard, Land Cruiser Prado, RAV4, Noah, Hilux, Harrier. Airport pickup at JNIA." });
+  const { data: settings } = useSettings();
+  const s = settings ?? FALLBACK_SETTINGS;
   const { t } = useT();
   const [sp, setSp] = useSearchParams();
   const from = sp.get("from") ?? "";
@@ -35,9 +37,10 @@ export default function Cars() {
   const categories = useMemo(() => Array.from(new Set((q.data ?? []).map((v) => v.category))).sort(), [q.data]);
   const list = useMemo(() => {
     let arr = (q.data ?? []).filter((v) => !category || v.category === category);
-    arr = [...arr].sort((a, b) => (sort === "price_asc" ? a.pricePerDayTzs - b.pricePerDayTzs : sort === "price_desc" ? b.pricePerDayTzs - a.pricePerDayTzs : b.seats - a.seats));
+    const price = (v: (typeof arr)[number]) => vehicleRates(v, rentalType, s).day;
+    arr = [...arr].sort((a, b) => (sort === "price_asc" ? price(a) - price(b) : sort === "price_desc" ? price(b) - price(a) : b.seats - a.seats));
     return arr;
-  }, [q.data, category, sort]);
+  }, [q.data, category, sort, rentalType, s]);
 
   const bookQs = (slug: string) => {
     const p = new URLSearchParams({ vehicle: slug, rentalType });
@@ -55,7 +58,7 @@ export default function Cars() {
           <div className="lg:col-span-5">
             <p className="eyebrow">{COMPANY.carsBrand}</p>
             <h1 className="mt-2 text-6xl sm:text-7xl">The fleet.</h1>
-            <p className="mt-4 max-w-md text-ink-soft">All Toyota, because every mechanic from Kariakoo to Kigoma can fix one. Full tank out, full tank back. Prices per day in shillings; the dollar figure follows the day's rate.</p>
+            <p className="mt-4 max-w-md text-ink-soft">Every car can be booked two ways — <b className="text-ink">Self Drive</b> or <b className="text-ink">With Driver</b> — and each has its own price. Prices per day in shillings; the dollar figure follows the day's rate.</p>
           </div>
           <form className="grid grid-cols-2 gap-3 self-end bg-white p-4 shadow-hard sm:grid-cols-4 lg:col-span-7" onSubmit={(e) => e.preventDefault()} aria-label="Filter by dates">
             <DateField label={t.card.pickup} value={from} onChange={(v) => update({ from: v, to: to && to >= v ? to : addDays(v || tomorrow(), 1) })} />
@@ -104,7 +107,7 @@ export default function Cars() {
             </div>
           )}
           {list.map((v) => (
-            <VehicleCard key={v.id} v={v} bookHref={bookQs(v.slug)} />
+            <VehicleCard key={v.id} v={v} bookHref={bookQs(v.slug)} rentalType={rentalType} />
           ))}
           {q.data && list.length === 0 && (
             <div className="sm:col-span-2 lg:col-span-3">

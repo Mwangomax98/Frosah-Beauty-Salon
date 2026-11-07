@@ -17,9 +17,18 @@ export const customer = (overrides: Partial<{ fullName: string; email: string; p
   ...overrides,
 });
 
-export async function firstVehicle(): Promise<{ id: number; slug: string; pricePerDayTzs: number; pricePerWeekTzs: number }> {
-  const [v] = await query<{ id: number; slug: string; price_per_day_tzs: number; price_per_week_tzs: number }>("SELECT * FROM vehicles WHERE active = 1 ORDER BY id LIMIT 1");
-  return { id: Number(v.id), slug: v.slug, pricePerDayTzs: Number(v.price_per_day_tzs), pricePerWeekTzs: Number(v.price_per_week_tzs) };
+export async function firstVehicle(): Promise<{ id: number; slug: string; pricePerDayTzs: number; pricePerWeekTzs: number; priceWithDriverPerDayTzs: number; priceWithDriverPerWeekTzs: number }> {
+  const [v] = await query<{ id: number; slug: string; price_per_day_tzs: number; price_per_week_tzs: number; price_with_driver_per_day_tzs: number; price_with_driver_per_week_tzs: number }>(
+    "SELECT * FROM vehicles WHERE active = 1 ORDER BY id LIMIT 1",
+  );
+  return {
+    id: Number(v.id),
+    slug: v.slug,
+    pricePerDayTzs: Number(v.price_per_day_tzs),
+    pricePerWeekTzs: Number(v.price_per_week_tzs),
+    priceWithDriverPerDayTzs: Number(v.price_with_driver_per_day_tzs),
+    priceWithDriverPerWeekTzs: Number(v.price_with_driver_per_week_tzs),
+  };
 }
 
 export async function propertyBySlug(slug: string): Promise<{ id: number; ical_token: string; price_per_night_tzs: number; cleaning_fee_tzs: number; min_nights: number }> {

@@ -1,23 +1,36 @@
 import { Link } from "react-router";
-import { COMPANY } from "@bluesparks/shared";
+import { COMPANY, vehicleRates } from "@bluesparks/shared";
 import { Hero } from "@/components/Hero";
 import { KangaDivider } from "@/components/KangaDivider";
 import { VehicleCard } from "@/components/VehicleCard";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Skeleton, ErrorState, EmptyState } from "@/components/States";
-import { useProperties, useSettings, useVehicles } from "@/lib/queries";
+import { useProperties, useReviews, useSettings, useVehicles, FALLBACK_SETTINGS } from "@/lib/queries";
+import { useCurrency } from "@/lib/currency";
+import { RENTAL_COPY } from "@/components/RentalOptions";
+import { ReviewsStrip } from "@/components/Reviews";
+import { businessJsonLd, faqJsonLd } from "@/lib/seoData";
 import { useSeo } from "@/lib/useSeo";
 import { IMAGES } from "@/content/images";
 import { AREAS, FAQ } from "@/content/site";
 import { img800, srcSet } from "@/lib/format";
 
 export default function Home() {
-  useSeo({
-    title: "Blue Spark Holdings — Car hire & short stays in Dar es Salaam",
-    description: "Johnson Rentals car hire (self-drive or with driver) and short-stay apartments in Dar es Salaam. Airport pickup at JNIA, stays in Masaki, Oyster Bay, Mikocheni and Kigamboni.",
-  });
   const { data: settings } = useSettings();
+  const s = settings ?? FALLBACK_SETTINGS;
+  const rating = useReviews({ limit: 1 });
+  useSeo({
+    title: "Blue Spark — Car rental in Dar es Salaam, self drive or with driver",
+    description: "Rent a car in Dar es Salaam from Blue Spark: self drive or with driver, each car with its own price. Toyota Alphard, Prado, RAV4 and more. Airport pickup at JNIA, short stays, WhatsApp booking 0625 102 051.",
+    jsonLd: [businessJsonLd({ phone: s.businessPhone, whatsapp: s.businessWhatsapp, address: s.businessAddress, instagram: s.instagramUrl, rating: rating.data?.summary }), faqJsonLd(FAQ)],
+  });
+  const { fmt } = useCurrency();
   const vehicles = useVehicles();
+  const fromPrice = (type: "self_drive" | "with_driver") => {
+    const prices = (vehicles.data ?? []).map((v) => vehicleRates(v, type, s).day);
+    return prices.length ? Math.min(...prices) : null;
+  };
+  const alphard = vehicles.data?.find((v) => v.slug === "toyota-alphard");
   const properties = useProperties();
   const bnb = settings?.bnbBrandName ?? COMPANY.staysBrand;
   const firstStay = properties.data?.[0];
@@ -25,6 +38,71 @@ export default function Home() {
   return (
     <>
       <Hero stayName={firstStay?.name} stayHref={firstStay ? `/stays/${firstStay.slug}` : "/stays"} />
+
+      {/* Two ways to rent — every car, two prices */}
+      <section className="container-x py-16 lg:py-20" aria-labelledby="ways-title">
+        <p className="eyebrow">Choose how you rent</p>
+        <h2 id="ways-title" className="mt-2 text-5xl sm:text-6xl">
+          Self Drive or With Driver.
+        </h2>
+        <p className="mt-4 max-w-2xl text-lg text-ink-soft">Every car in the fleet can be booked both ways, and each way has its own price. Pick what suits the trip.</p>
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
+          {(
+            [
+              ["self_drive", "/self-drive"],
+              ["with_driver", "/with-driver"],
+            ] as const
+          ).map(([type, to]) => {
+            const copy = RENTAL_COPY[type];
+            const from = fromPrice(type);
+            return (
+              <Link key={type} to={to} className="group flex flex-col border-2 border-brand bg-white p-6 shadow-hard transition-transform hover:-translate-y-0.5 motion-reduce:transition-none">
+                <span className="text-xs font-bold tracking-wider text-ink-soft uppercase">{copy.sw}</span>
+                <span className="mt-1 font-display text-4xl text-brand uppercase group-hover:text-spark-deep">{copy.title}</span>
+                <span className="mt-2 text-ink-soft">{copy.blurb}</span>
+                {from !== null && (
+                  <span className="mt-4">
+                    From <span className="font-display text-3xl text-spark">{fmt(from)}</span> / day
+                  </span>
+                )}
+                <span className="mt-4 font-bold text-brand">See {copy.title} prices →</span>
+              </Link>
+            );
+          })}
+        </div>
+        <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold">
+          <Link to="/prices" className="link-underline text-brand">
+            Full price list
+          </Link>
+          <Link to="/book/car" className="link-underline text-brand">
+            Book a car now
+          </Link>
+        </p>
+      </section>
+
+      {/* Toyota Alphard feature */}
+      <section className="bg-brand text-paper" aria-labelledby="alphard-title">
+        <div className="container-x grid items-center gap-8 py-14 md:grid-cols-12">
+          <div className="md:col-span-7">
+            <p className="eyebrow text-sky">Our flagship</p>
+            <h2 id="alphard-title" className="mt-2 text-5xl text-paper sm:text-6xl">
+              Toyota Alphard.
+            </h2>
+            <p className="mt-3 max-w-lg text-paper/85">Lounge seats, a quiet cabin and room for seven. For VIP airport pickups, weddings and executive transfers — with one of our drivers, or drive it yourself.</p>
+            {alphard && (
+              <p className="mt-4 text-paper/85">
+                With Driver <b className="font-display text-2xl text-sky">{fmt(vehicleRates(alphard, "with_driver", s).day)}</b> · Self Drive <b className="font-display text-2xl text-sky">{fmt(alphard.pricePerDayTzs)}</b> <span className="text-sm">per day</span>
+              </p>
+            )}
+            <Link to="/toyota-alphard" className="btn-primary mt-6">
+              See the Alphard & book
+            </Link>
+          </div>
+          {alphard?.images[0] && (
+            <img src={img800(alphard.images[0])} alt="Toyota Alphard" width="800" height="533" loading="lazy" decoding="async" className="aspect-[3/2] w-full border-2 border-paper/30 object-cover md:col-span-5" />
+          )}
+        </div>
+      </section>
 
       {/* Two companies, one phone number */}
       <section className="bg-cream" aria-labelledby="two-title">
@@ -60,11 +138,11 @@ export default function Home() {
                 <img src={img800(IMAGES.stays[1]!)} alt="Bedroom in an Oyster Bay apartment" width="800" height="533" loading="lazy" decoding="async" className="aspect-[3/4] w-full border-2 border-brand object-cover" />
               </figure>
               <div className="col-span-5 col-start-2 -mt-10 bg-brand p-5 text-paper shadow-hard-spark">
-                <p className="font-display text-5xl text-spark">6</p>
-                <p className="text-sm">cars, all Toyota, all serviced by the same garage in Mikocheni.</p>
+                <p className="font-display text-5xl text-spark">{vehicles.data?.length || "—"}</p>
+                <p className="text-sm">cars, each bookable self drive or with driver, all serviced by the same garage in Mikocheni.</p>
               </div>
               <div className="col-span-5 col-start-8 -mt-4 bg-paper p-5 shadow-hard">
-                <p className="font-display text-5xl text-brand">5</p>
+                <p className="font-display text-5xl text-brand">{properties.data?.length || "—"}</p>
                 <p className="text-sm">apartments and houses in {AREAS.length} neighbourhoods, all with backup power.</p>
               </div>
             </div>
@@ -93,7 +171,7 @@ export default function Home() {
               <ErrorState error={vehicles.error} retry={() => vehicles.refetch()} compact />
             </div>
           )}
-          {vehicles.data?.slice(0, 3).map((v) => <VehicleCard key={v.id} v={v} />)}
+          {vehicles.data?.slice(0, 6).map((v) => <VehicleCard key={v.id} v={v} />)}
           {vehicles.data && vehicles.data.length === 0 && (
             <div className="sm:col-span-2 lg:col-span-3">
               <EmptyState title="The fleet is being updated">Check back shortly or WhatsApp us.</EmptyState>
@@ -158,6 +236,8 @@ export default function Home() {
           ))}
         </ol>
       </section>
+
+      <ReviewsStrip />
 
       {/* Cross-sell band */}
       <section className="bg-brand text-paper" aria-labelledby="bundle-title">

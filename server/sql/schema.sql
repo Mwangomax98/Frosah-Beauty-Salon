@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS vehicles (
   id INT AUTO_INCREMENT PRIMARY KEY,
   slug VARCHAR(120) NOT NULL UNIQUE,
   name VARCHAR(160) NOT NULL,
+  model VARCHAR(120) NOT NULL DEFAULT '',
+  year SMALLINT UNSIGNED NULL,
   category VARCHAR(60) NOT NULL DEFAULT 'SUV',
   seats TINYINT UNSIGNED NOT NULL DEFAULT 5,
   bags TINYINT UNSIGNED NOT NULL DEFAULT 2,
@@ -31,6 +33,9 @@ CREATE TABLE IF NOT EXISTS vehicles (
   price_per_day_tzs INT UNSIGNED NOT NULL,
   price_per_week_tzs INT UNSIGNED NULL,
   price_per_month_tzs INT UNSIGNED NULL,
+  price_with_driver_per_day_tzs INT UNSIGNED NULL,
+  price_with_driver_per_week_tzs INT UNSIGNED NULL,
+  price_with_driver_per_month_tzs INT UNSIGNED NULL,
   mileage_policy VARCHAR(255) NOT NULL DEFAULT 'Unlimited within Dar es Salaam',
   deposit_tzs INT UNSIGNED NOT NULL DEFAULT 0,
   description TEXT NOT NULL,
@@ -185,4 +190,16 @@ CREATE TABLE IF NOT EXISTS notification_log (
   detail TEXT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_notif_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  location VARCHAR(120) NOT NULL DEFAULT '',
+  service ENUM('car','stay','general') NOT NULL DEFAULT 'general',
+  rating TINYINT UNSIGNED NOT NULL,
+  comment TEXT NOT NULL,
+  approved TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_approved (approved, created_at)
 ) ENGINE=InnoDB;

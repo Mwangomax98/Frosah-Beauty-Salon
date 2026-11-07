@@ -3,6 +3,11 @@ import type { Dictionary } from "./en";
 export const sw: Dictionary = {
   nav: {
     cars: "Magari",
+    selfDrive: "Bila dereva",
+    withDriver: "Na dereva",
+    alphard: "Toyota Alphard",
+    prices: "Bei",
+    reviews: "Maoni",
     stays: "Malazi",
     about: "Kuhusu sisi",
     contact: "Wasiliana nasi",

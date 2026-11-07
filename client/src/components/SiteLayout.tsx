@@ -2,6 +2,7 @@ import { Outlet } from "react-router";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { PaperGrain } from "./PaperGrain";
+import { WhatsAppButton } from "./WhatsAppButton";
 
 export default function SiteLayout() {
   return (
@@ -12,6 +13,7 @@ export default function SiteLayout() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }

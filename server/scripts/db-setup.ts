@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import bcrypt from "bcryptjs";
 import mysql from "mysql2/promise";
 import { SERVER_ROOT, config } from "../src/config.ts";
-import { DEFAULT_SETTINGS } from "../src/db.ts";
+import { BUSINESS_WHATSAPP, DEFAULT_SETTINGS } from "../src/db.ts";
 
 const log = (msg: string) => {
   if (!config.isTest) console.log(msg);
@@ -38,6 +38,34 @@ async function applySchema(conn: mysql.Connection): Promise<void> {
   for (const stmt of statements) await conn.query(stmt);
 }
 
+async function columnExists(conn: mysql.Connection, table: string, column: string): Promise<boolean> {
+  const [rows] = await conn.query<mysql.RowDataPacket[]>(
+    "SELECT COUNT(*) AS n FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?",
+    [table, column],
+  );
+  return Number(rows[0].n) > 0;
+}
+
+/** Columns added after the first release. CREATE TABLE IF NOT EXISTS does not touch existing tables, so add them here. */
+async function migrate(conn: mysql.Connection): Promise<void> {
+  const added: [string, string, string][] = [
+    ["vehicles", "model", "VARCHAR(120) NOT NULL DEFAULT '' AFTER name"],
+    ["vehicles", "year", "SMALLINT UNSIGNED NULL AFTER model"],
+    ["vehicles", "price_with_driver_per_day_tzs", "INT UNSIGNED NULL AFTER price_per_month_tzs"],
+    ["vehicles", "price_with_driver_per_week_tzs", "INT UNSIGNED NULL AFTER price_with_driver_per_day_tzs"],
+    ["vehicles", "price_with_driver_per_month_tzs", "INT UNSIGNED NULL AFTER price_with_driver_per_week_tzs"],
+  ];
+  for (const [table, column, ddl] of added) {
+    if (!(await columnExists(conn, table, column))) {
+      await conn.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${ddl}`);
+      log(`Added ${table}.${column}`);
+    }
+  }
+  // Replace the old placeholder WhatsApp/phone with Blue Spark's booking line, but never overwrite a real number.
+  await conn.query("UPDATE settings SET `value` = ? WHERE `key` = 'businessWhatsapp' AND `value` = '255700000000'", [BUSINESS_WHATSAPP]);
+  await conn.query("UPDATE settings SET `value` = ? WHERE `key` = 'businessPhone' AND `value` = '+255 700 000 000'", [DEFAULT_SETTINGS.businessPhone]);
+}
+
 async function isEmpty(conn: mysql.Connection, table: string): Promise<boolean> {
   const [rows] = await conn.query<mysql.RowDataPacket[]>(`SELECT COUNT(*) AS n FROM \`${table}\``);
   return Number(rows[0].n) === 0;
@@ -60,66 +88,97 @@ async function seed(conn: mysql.Connection): Promise<void> {
     await conn.query("INSERT IGNORE INTO settings (`key`, `value`) VALUES (?, ?)", [key, String(value)]);
   }
 
-  if (await isEmpty(conn, "vehicles")) {
-    const vehicles = [
-      {
-        slug: "toyota-land-cruiser-prado", name: "Toyota Land Cruiser Prado", category: "4WD SUV", seats: 7, bags: 4, transmission: "automatic", drive: "4WD", fuel: "Diesel",
-        features: ["Air conditioning", "Bluetooth", "Reverse camera", "Roof rack", "USB charging", "Spare wheel"],
-        day: 350000, deposit: 500000,
-        description: "The safari standard. Comfortable on tarmac, unstoppable on murram. Ideal for Mikumi, Morogoro and upcountry trips with the family.",
-        mileage: "Unlimited within Dar es Salaam; 300 km/day upcountry",
-      },
-      {
-        slug: "toyota-hilux-4wd", name: "Toyota Hilux Double Cab 4WD", category: "Pickup", seats: 5, bags: 3, transmission: "manual", drive: "4WD", fuel: "Diesel",
-        features: ["Air conditioning", "Bluetooth", "Tow bar", "Load bed cover", "Spare wheel"],
-        day: 250000, deposit: 400000,
-        description: "Workhorse for site visits, cargo and rough roads. Popular with NGOs and contractors heading out of town.",
-        mileage: "Unlimited within Dar es Salaam; 300 km/day upcountry",
-      },
-      {
-        slug: "toyota-harrier", name: "Toyota Harrier", category: "SUV", seats: 5, bags: 3, transmission: "automatic", drive: "2WD", fuel: "Petrol",
-        features: ["Air conditioning", "Leather seats", "Bluetooth", "Reverse camera", "Keyless entry"],
-        day: 200000, deposit: 300000,
-        description: "Smooth and quiet city SUV. A favourite for weddings, business meetings and airport runs.",
-        mileage: "Unlimited within Dar es Salaam",
-      },
-      {
-        slug: "toyota-rav4", name: "Toyota RAV4", category: "Compact SUV", seats: 5, bags: 2, transmission: "automatic", drive: "2WD", fuel: "Petrol",
-        features: ["Air conditioning", "Bluetooth", "Reverse camera", "USB charging"],
-        day: 150000, deposit: 250000,
-        description: "Easy to park, economical on fuel and still high enough for Dar's rainy-season roads.",
-        mileage: "Unlimited within Dar es Salaam",
-      },
-      {
-        slug: "toyota-noah", name: "Toyota Noah 8-seater", category: "Van", seats: 8, bags: 5, transmission: "automatic", drive: "2WD", fuel: "Petrol",
-        features: ["Air conditioning", "Sliding doors", "Bluetooth", "USB charging"],
-        day: 180000, deposit: 250000,
-        description: "Room for the whole group and the luggage. Great for airport transfers, church groups and day trips to Bagamoyo.",
-        mileage: "Unlimited within Dar es Salaam",
-      },
-      {
-        slug: "suzuki-alto", name: "Suzuki Alto", category: "Economy", seats: 4, bags: 1, transmission: "manual", drive: "2WD", fuel: "Petrol",
-        features: ["Air conditioning", "Radio/AUX"],
-        day: 120000, deposit: 150000,
-        description: "Our most affordable car. Perfect for getting around town on a budget.",
-        mileage: "Unlimited within Dar es Salaam",
-      },
-    ];
-    let i = 1;
-    for (const v of vehicles) {
-      await conn.query(
-        `INSERT INTO vehicles (slug, name, category, seats, bags, transmission, drive, fuel, features, images, price_per_day_tzs, price_per_week_tzs, price_per_month_tzs, mileage_policy, deposit_tzs, description, active)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`,
-        [
-          v.slug, v.name, v.category, v.seats, v.bags, v.transmission, v.drive, v.fuel, j(v.features),
-          j([`/images/placeholders/car-${i}.webp`, `/images/placeholders/car-${i}-b.webp`]),
-          v.day, Math.round((v.day * 6.3) / 1000) * 1000, Math.round((v.day * 24) / 1000) * 1000, v.mileage, v.deposit, v.description,
-        ],
-      );
-      i++;
+  // Placeholder fleet. Every car has two booking options, each with its own price:
+  // `day` = self drive per day, `driverDay` = with driver (car + driver, within Dar) per day.
+  const vehicles = [
+    {
+      slug: "toyota-alphard", name: "Toyota Alphard", model: "Alphard Executive Lounge", year: 2021, category: "Luxury MPV", seats: 7, bags: 4, transmission: "automatic", drive: "2WD", fuel: "Petrol",
+      features: ["Captain's seats with ottomans", "Twin power sliding doors", "Tri-zone climate control", "Leather interior", "Rear entertainment screen", "Ambient lighting", "USB charging", "Reverse camera"],
+      day: 450000, driverDay: 520000, deposit: 700000,
+      description: "Our flagship. Reclining lounge seats, quiet cabin and room for seven with luggage. The car for VIP airport pickups, weddings, executive transfers and family trips in comfort.",
+      mileage: "Unlimited within Dar es Salaam; 250 km/day upcountry",
+      image: 3,
+    },
+    {
+      slug: "toyota-land-cruiser-prado", name: "Toyota Land Cruiser Prado", model: "Prado TX-L", year: 2019, category: "4WD SUV", seats: 7, bags: 4, transmission: "automatic", drive: "4WD", fuel: "Diesel",
+      features: ["Air conditioning", "Bluetooth", "Reverse camera", "Roof rack", "USB charging", "Spare wheel"],
+      day: 350000, driverDay: 410000, deposit: 500000,
+      description: "The safari standard. Comfortable on tarmac, unstoppable on murram. Ideal for Mikumi, Morogoro and upcountry trips with the family.",
+      mileage: "Unlimited within Dar es Salaam; 300 km/day upcountry",
+      image: 1,
+    },
+    {
+      slug: "toyota-hilux-4wd", name: "Toyota Hilux Double Cab 4WD", model: "Hilux Double Cab", year: 2018, category: "Pickup", seats: 5, bags: 3, transmission: "manual", drive: "4WD", fuel: "Diesel",
+      features: ["Air conditioning", "Bluetooth", "Tow bar", "Load bed cover", "Spare wheel"],
+      day: 250000, driverDay: 300000, deposit: 400000,
+      description: "Workhorse for site visits, cargo and rough roads. Popular with NGOs and contractors heading out of town.",
+      mileage: "Unlimited within Dar es Salaam; 300 km/day upcountry",
+      image: 5,
+    },
+    {
+      slug: "toyota-harrier", name: "Toyota Harrier", model: "Harrier Premium", year: 2017, category: "SUV", seats: 5, bags: 3, transmission: "automatic", drive: "2WD", fuel: "Petrol",
+      features: ["Air conditioning", "Leather seats", "Bluetooth", "Reverse camera", "Keyless entry"],
+      day: 200000, driverDay: 250000, deposit: 300000,
+      description: "Smooth and quiet city SUV. A favourite for weddings, business meetings and airport runs.",
+      mileage: "Unlimited within Dar es Salaam",
+      image: 6,
+    },
+    {
+      slug: "toyota-rav4", name: "Toyota RAV4", model: "RAV4 G", year: 2016, category: "Compact SUV", seats: 5, bags: 2, transmission: "automatic", drive: "2WD", fuel: "Petrol",
+      features: ["Air conditioning", "Bluetooth", "Reverse camera", "USB charging"],
+      day: 150000, driverDay: 195000, deposit: 250000,
+      description: "Easy to park, economical on fuel and still high enough for Dar's rainy-season roads.",
+      mileage: "Unlimited within Dar es Salaam",
+      image: 2,
+    },
+    {
+      slug: "toyota-noah", name: "Toyota Noah 8-seater", model: "Noah Si", year: 2016, category: "Van", seats: 8, bags: 5, transmission: "automatic", drive: "2WD", fuel: "Petrol",
+      features: ["Air conditioning", "Sliding doors", "Bluetooth", "USB charging"],
+      day: 180000, driverDay: 225000, deposit: 250000,
+      description: "Room for the whole group and the luggage. Great for airport transfers, church groups and day trips to Bagamoyo.",
+      mileage: "Unlimited within Dar es Salaam",
+      image: 3,
+    },
+    {
+      slug: "suzuki-alto", name: "Suzuki Alto", model: "Alto VX", year: 2015, category: "Economy", seats: 4, bags: 1, transmission: "manual", drive: "2WD", fuel: "Petrol",
+      features: ["Air conditioning", "Radio/AUX"],
+      day: 120000, driverDay: 160000, deposit: 150000,
+      description: "Our most affordable car. Perfect for getting around town on a budget.",
+      mileage: "Unlimited within Dar es Salaam",
+      image: 4,
+    },
+  ];
+  const week = (d: number) => Math.round((d * 6.3) / 1000) * 1000;
+  const month = (d: number) => Math.round((d * 24) / 1000) * 1000;
+  const fleetWasEmpty = await isEmpty(conn, "vehicles");
+  let added = 0;
+  for (const v of vehicles) {
+    const [existing] = await conn.query<mysql.RowDataPacket[]>("SELECT id FROM vehicles WHERE slug = ?", [v.slug]);
+    if (existing.length) {
+      // Existing database: fill in model/year only where blank. With-driver prices are left for the owner to set
+      // (until then the site shows self-drive price + default driver fee); admin edits are never overwritten.
+      await conn.query("UPDATE vehicles SET model = IF(model = '', ?, model), year = COALESCE(year, ?) WHERE slug = ?", [v.model, v.year, v.slug]);
+      continue;
     }
-    log(`Seeded ${vehicles.length} vehicles`);
+    // Only the flagship Alphard is added to a fleet the owner has already set up; the rest seed an empty table.
+    if (!fleetWasEmpty && v.slug !== "toyota-alphard") continue;
+    await conn.query(
+      `INSERT INTO vehicles (slug, name, model, year, category, seats, bags, transmission, drive, fuel, features, images,
+         price_per_day_tzs, price_per_week_tzs, price_per_month_tzs,
+         price_with_driver_per_day_tzs, price_with_driver_per_week_tzs, price_with_driver_per_month_tzs,
+         mileage_policy, deposit_tzs, description, active)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`,
+      [
+        v.slug, v.name, v.model, v.year, v.category, v.seats, v.bags, v.transmission, v.drive, v.fuel, j(v.features),
+        j([`/images/placeholders/car-${v.image}.webp`]),
+        v.day, week(v.day), month(v.day),
+        v.driverDay, week(v.driverDay), month(v.driverDay),
+        v.mileage, v.deposit, v.description,
+      ],
+    );
+    added++;
   }
+  if (added) log(`Seeded ${added} vehicle${added > 1 ? "s" : ""}`);
 
   if (await isEmpty(conn, "properties")) {
     const commonRules = "No smoking indoors. No parties or loud music after 22:00. Please respect the neighbours and the askari. Check-out by 11:00.";
@@ -244,6 +303,7 @@ export async function setupDatabase(): Promise<void> {
   const conn = await mysql.createConnection({ ...config.db, multipleStatements: false, charset: "utf8mb4" });
   try {
     await applySchema(conn);
+    await migrate(conn);
     log(`Schema applied to ${config.db.database}`);
     await seed(conn);
   } finally {

@@ -16,7 +16,19 @@ describe("quote endpoints", () => {
     expect(res.body.notes).toContain("Weekly rate applied");
   });
 
-  it("adds the driver fee per day and the delivery zone fee per custom leg", async () => {
+  it("prices self drive and with driver separately for the same car", async () => {
+    const v = await firstVehicle();
+    const body = { vehicleId: v.id, pickupDate: day(30), pickupTime: "10:00", returnDate: day(32), returnTime: "10:00", pickupLocation: "jnia", dropoffLocation: "jnia", extras: [] };
+    const self = await api().post("/api/quote/car").send({ ...body, rentalType: "self_drive" });
+    const driven = await api().post("/api/quote/car").send({ ...body, rentalType: "with_driver", driverScope: "dar" });
+    expect(self.status).toBe(200);
+    expect(driven.status).toBe(200);
+    expect(self.body.totalTzs).toBe(v.pricePerDayTzs * 2);
+    expect(driven.body.totalTzs).toBe(v.priceWithDriverPerDayTzs * 2);
+    expect(driven.body.totalTzs).toBeGreaterThan(self.body.totalTzs);
+  });
+
+  it("adds the upcountry allowance per day and the delivery zone fee per custom leg", async () => {
     const v = await firstVehicle();
     const zones = (await api().get("/api/delivery-zones")).body as { id: number; feeTzs: number }[];
     const settings = (await api().get("/api/settings")).body;
@@ -27,8 +39,10 @@ describe("quote endpoints", () => {
     });
     expect(res.status).toBe(200);
     expect(res.body.days).toBe(3);
-    const driver = res.body.items.find((i: { code: string }) => i.code === "driver");
-    expect(driver.totalTzs).toBe(settings.driverFeeUpcountryTzs * 3);
+    const vehicleLine = res.body.items.find((i: { code: string }) => i.code === "vehicle");
+    expect(vehicleLine.totalTzs).toBe(v.priceWithDriverPerDayTzs * 3);
+    const allowance = res.body.items.find((i: { code: string }) => i.code === "driver_upcountry");
+    expect(allowance.totalTzs).toBe(settings.driverFeeUpcountryTzs * 3);
     const delivery = res.body.items.find((i: { code: string }) => i.code === "delivery");
     expect(delivery.qty).toBe(2);
     expect(delivery.totalTzs).toBe(zones[0].feeTzs * 2);
